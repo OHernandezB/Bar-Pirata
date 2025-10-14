@@ -8,6 +8,10 @@ export function Footer({ brand = 'Bar Pirata', year = new Date().getFullYear(), 
         <div className="footer__hours">
           <OpeningHours compact />
         </div>
+        <div className="footer__contact">
+          <span>Tel: <a href="tel:+56983250599">+56983250599</a></span>
+          <span style={{ marginLeft: '0.5rem' }}>Email: <a href="mailto:om.hernandez@duocuc.cl">om.hernandez@duocuc.cl</a></span>
+        </div>
         <div className="footer__social">
           {social.map(({ label, href }) => (
             <a key={label} href={href} target="_blank" rel="noreferrer">{label}</a>

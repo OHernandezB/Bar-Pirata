@@ -26,15 +26,15 @@ export function Menu({ categories = defaultCategories }) {
 
 const defaultCategories = {
   Cócteles: [
-    { name: 'Mojito', description: 'Ron, hierbabuena, lima, soda.', price: 8, tags: ['clásico'] },
-    { name: 'Negroni', description: 'Ginebra, vermut rojo, Campari.', price: 9 },
+    { name: 'Mojito', description: 'Ron, hierbabuena, lima, soda.', price: 6500, tags: ['clásico'] },
+    { name: 'Negroni', description: 'Ginebra, vermut rojo, Campari.', price: 7000 },
   ],
   Cervezas: [
-    { name: 'IPA artesanal', description: 'Amarga y aromática.', price: 6, tags: ['artesanal'] },
-    { name: 'Lager', description: 'Suave y refrescante.', price: 5 },
+    { name: 'IPA artesanal', description: 'Amarga y aromática.', price: 4500, tags: ['artesanal'] },
+    { name: 'Lager', description: 'Suave y refrescante.', price: 3500 },
   ],
   Comidas: [
-    { name: 'Nachos con queso', description: 'Totopos, queso, jalapeños.', price: 7 },
-    { name: 'Hamburguesa pirata', description: 'Doble carne, cheddar, salsa especial.', price: 12 },
+    { name: 'Nachos con queso', description: 'Totopos, queso, jalapeños.', price: 6000 },
+    { name: 'Hamburguesa pirata', description: 'Doble carne, cheddar, salsa especial.', price: 8500 },
   ],
 };

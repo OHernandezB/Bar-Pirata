@@ -1,4 +1,4 @@
-export function Contact({ address = defaultAddress, phone = '+00 000 0000', email = 'hola@barpirata.com', mapEmbedUrl }) {
+export function Contact({ address = defaultAddress, phone = '+56983250599', email = 'om.hernandez@duocuc.cl', mapEmbedUrl }) {
   return (
     <section id="contacto" className="contact">
       <h2>Contacto</h2>

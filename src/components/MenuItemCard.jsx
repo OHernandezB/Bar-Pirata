@@ -1,4 +1,5 @@
 import { useCart } from '../context/CartContext.jsx';
+import { formatCLP } from '../utils/format.js';
 
 export function MenuItemCard({ name, description, price, tags = [] }) {
   const cart = useCart();
@@ -9,7 +10,7 @@ export function MenuItemCard({ name, description, price, tags = [] }) {
     <article className="menu-item-card">
       <div className="menu-item-card__header">
         <h3>{name}</h3>
-        {price != null && <span className="menu-item-card__price">${price}</span>}
+        {price != null && <span className="menu-item-card__price">{formatCLP(price)}</span>}
       </div>
       {description && <p className="menu-item-card__desc">{description}</p>}
       {tags.length > 0 && (

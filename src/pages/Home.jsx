@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Hero, Events, Gallery, Contact } from '../components';
+import { Hero, Events, Contact } from '../components';
 
 export default function Home({ onReserveClick }) {
   const location = useLocation();
@@ -24,7 +24,6 @@ export default function Home({ onReserveClick }) {
         onCtaClick={onReserveClick}
       />
       <Events />
-      <Gallery />
       <Contact />
     </main>
   );

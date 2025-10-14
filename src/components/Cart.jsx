@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
+import { formatCLP } from '../utils/format.js';
 
 export function Cart() {
   const { items, reservation, updateQty, removeItem, clearCart, total } = useCart() || {};
@@ -17,7 +18,7 @@ export function Cart() {
             <div key={it.id} className="cart__item">
               <div className="cart__item-info">
                 <strong>{it.name}</strong>
-                <span className="price">${it.price}</span>
+                <span className="price">{formatCLP(it.price)}</span>
               </div>
               <div className="cart__item-actions">
                 <label>
@@ -28,7 +29,7 @@ export function Cart() {
               </div>
             </div>
           ))}
-          <div className="cart__total">Total: ${total?.toFixed?.(2) || 0}</div>
+          <div className="cart__total">Total: {formatCLP(total || 0)}</div>
         </div>
       )}
 

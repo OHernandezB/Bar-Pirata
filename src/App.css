@@ -42,6 +42,10 @@ a { color: var(--color-accent); }
   text-align: center;
   padding: 0.5rem 1rem;
   font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 /* Navbar */
@@ -111,9 +115,14 @@ a { color: var(--color-accent); }
   min-height: 60vh;
   display: grid;
   place-items: center;
-  background: linear-gradient(180deg, rgba(212,175,55,0.2), rgba(28,28,28,0.7)), url('https://picsum.photos/seed/irishpub/1600/900') center/cover no-repeat;
+  overflow: hidden;
+  background: var(--color-charcoal);
 }
-.hero__content { text-align: center; padding: 4rem 1rem; }
+.hero__bg { position: absolute; inset: 0; z-index: 0; }
+.hero__slide { position: absolute; inset: 0; background: center/cover no-repeat; opacity: 0; transition: opacity 800ms ease; will-change: opacity; }
+.hero__slide.is-active { opacity: 1; }
+.hero__overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(212,175,55,0.20), rgba(28,28,28,0.75)); }
+.hero__content { position: relative; z-index: 2; text-align: center; padding: 4rem 1rem; }
 .hero__content h1 { font-size: clamp(2rem, 6vw, 4rem); margin: 0 0 0.5rem; }
 .hero__content p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 1.25rem; }
 .hero__cta { background: var(--color-button); color: #fff; border: none; padding: 0.75rem 1.25rem; border-radius: 6px; cursor: pointer; }
@@ -192,6 +201,10 @@ a { color: var(--color-accent); }
 .footer__inner { width: min(100%, var(--max-width)); margin: 0 auto; padding: 1rem; display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: start; }
 .footer__social a { margin-left: 0.5rem; color: var(--color-text); text-decoration: none; opacity: 0.9; }
 .footer__social a:hover { color: var(--color-accent); }
+
+/* Footer contact */
+.footer__contact a { color: var(--color-text); text-decoration: none; opacity: 0.9; }
+.footer__contact a:hover { color: var(--color-accent); }
 
 /* Footer hours */
 .footer__hours .opening-hours { margin: 0; padding: 0; }

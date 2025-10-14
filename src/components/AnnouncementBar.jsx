@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export function AnnouncementBar({ messages = defaultMessages, intervalMs = 5000 }) {
+export function AnnouncementBar({ messages = defaultMessages, intervalMs = 5000, phone = '+569 8325 0599', email = 'om.hernandez@duocuc.cl' }) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
