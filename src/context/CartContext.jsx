@@ -4,7 +4,7 @@ const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]); // { id, name, price, qty }
-  const [reservation, setReservation] = useState(null); // { name, phone, date, time, size, table }
+  const [reservation, setReservation] = useState(null); // { name, rut, email, phone }
 
   const addItem = (item, qty = 1) => {
     if (!item || !item.id) return;

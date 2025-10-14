@@ -9,3 +9,4 @@ export { Events } from './Events.jsx';
 export { Contact } from './Contact.jsx';
 export { Footer } from './Footer.jsx';
 export { Cart } from './Cart.jsx';
+export { Tables } from './Tables.jsx';

@@ -11,7 +11,15 @@ function App() {
 
   const handleReservationSubmit = (data) => {
     // Aquí podríamos integrar una API o enviar a un backend.
-    alert(`Reserva enviada:\nNombre: ${data.name}\nTeléfono: ${data.phone}\nFecha: ${data.date} ${data.time}\nPersonas: ${data.size}`)
+    alert(
+      `Reserva enviada:\n` +
+      `Nombre: ${data.name}\n` +
+      `RUT: ${data.rut}\n` +
+      `Correo: ${data.email}\n` +
+      `Teléfono: ${data.phone}` +
+      (data.time ? `\nHora: ${data.time}` : '') +
+      (data.table ? `\nMesa: ${data.table}` : '')
+    )
   }
 
   return (
