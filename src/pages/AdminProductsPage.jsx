@@ -1,16 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import '../styles/admin.css'
 import { useAuth } from '../context/AuthContext.jsx'
 import { getProducts, createProduct, deleteProduct } from '../api/xano.js'
 
 export default function AdminProductsPage() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
 
   const [form, setForm] = useState({ name: '', description: '', price: '', category: '', tags: '' })
+  const [imageFile, setImageFile] = useState(null)
+  const [isDragging, setIsDragging] = useState(false)
   const canSubmit = useMemo(() => form.name && form.price, [form])
 
   const load = async () => {
@@ -28,27 +32,80 @@ export default function AdminProductsPage() {
     }
   }
 
+  const handleDeleteAll = async () => {
+    if (items.length === 0) return
+    if (!confirm('¿Eliminar TODOS los productos? Esta acción es irreversible.')) return
+    setLoading(true)
+    try {
+      for (const p of items) {
+        const id = p.id || p.uuid || p._id
+        if (id) {
+          try { await deleteProduct(id) } catch (err) { console.error('deleteProduct error', id, err) }
+        }
+      }
+      await load()
+    } catch (err) {
+      console.error('bulk delete error', err)
+      alert('Error al eliminar todos los productos. Ver consola.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => { if (isAuthenticated) load() }, [isAuthenticated])
 
   const handleCreate = async (e) => {
     e.preventDefault()
     if (!canSubmit) return
     try {
-      const payload = {
-        name: form.name,
-        description: form.description || undefined,
-        price: Number(form.price),
-        category: form.category || undefined,
-        tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : undefined,
+      const tagsArr = form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : []
+      if (imageFile) {
+        const fd = new FormData()
+        fd.append('name', form.name)
+        fd.append('price', String(Number(form.price)))
+        if (form.description) fd.append('description', form.description)
+        if (form.category) fd.append('category', form.category)
+        if (tagsArr.length > 0) fd.append('tags', JSON.stringify(tagsArr))
+        fd.append('image', imageFile)
+        await createProduct(fd)
+      } else {
+        const payload = {
+          name: form.name,
+          description: form.description || undefined,
+          price: Number(form.price),
+          category: form.category || undefined,
+          tags: tagsArr.length > 0 ? tagsArr : undefined,
+        }
+        await createProduct(payload)
       }
-      await createProduct(payload)
       setForm({ name: '', description: '', price: '', category: '', tags: '' })
+      setImageFile(null)
       await load()
     } catch (err) {
       console.error('createProduct error', err)
       alert('Error creando producto. Ver consola.')
     }
   }
+
+  const handleFileSelect = (file) => {
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      alert('Selecciona una imagen válida (jpg, png, etc.).')
+      return
+    }
+    setImageFile(file)
+  }
+
+  const onDrop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    const file = e.dataTransfer.files?.[0]
+    if (file) handleFileSelect(file)
+  }
+
+  const onDragOver = (e) => { e.preventDefault(); setIsDragging(true) }
+  const onDragLeave = (e) => { e.preventDefault(); setIsDragging(false) }
 
   const handleDelete = async (id) => {
     if (!id) return
@@ -79,6 +136,8 @@ export default function AdminProductsPage() {
         <h2>Panel de Productos</h2>
         <div className="admin__actions">
           <button className="btn" onClick={load} disabled={loading}>{loading ? 'Actualizando…' : 'Refrescar'}</button>
+          <button className="btn btn--danger" onClick={handleDeleteAll} disabled={loading || items.length === 0}>Eliminar todos</button>
+          <button className="btn btn--ghost" onClick={() => { logout(); navigate('/login'); }}>Salir</button>
         </div>
       </div>
 
@@ -104,6 +163,37 @@ export default function AdminProductsPage() {
           <div className="form-field">
             <label>Tags (coma)</label>
             <input className="form-input" value={form.tags} onChange={e => setForm(f => ({ ...f, tags: e.target.value }))} placeholder="ej: clásico, artesanal" />
+          </div>
+          <div className="form-field form-field--full">
+            <label>Imagen del producto</label>
+            <div
+              className={`admin__dropzone ${isDragging ? 'is-dragging' : ''}`}
+              onDragOver={onDragOver}
+              onDragLeave={onDragLeave}
+              onDrop={onDrop}
+              onClick={() => document.getElementById('product-image-input')?.click()}
+            >
+              {imageFile ? (
+                <div className="admin__dropzone-preview">
+                  <img src={URL.createObjectURL(imageFile)} alt="Vista previa" className="admin__thumb admin__thumb--lg" />
+                  <div className="admin__dropzone-meta">
+                    <span>{imageFile.name}</span>
+                    <button type="button" className="btn btn--ghost" onClick={() => setImageFile(null)}>Quitar</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="admin__dropzone-hint">
+                  <span>Arrastra una imagen aquí o haz clic para seleccionar</span>
+                </div>
+              )}
+              <input
+                id="product-image-input"
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={(e) => handleFileSelect(e.target.files?.[0])}
+              />
+            </div>
           </div>
           <div className="form-actions">
             <button className="btn" type="submit" disabled={!canSubmit}>Crear</button>
@@ -131,6 +221,7 @@ export default function AdminProductsPage() {
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Imagen</th>
                 <th>Nombre</th>
                 <th>Precio</th>
                 <th>Categoría</th>
@@ -150,6 +241,9 @@ export default function AdminProductsPage() {
                 .map((p) => (
                   <tr key={p.id || p.uuid || p._id}>
                     <td>{p.id || p.uuid || p._id}</td>
+                    <td>
+                      {(() => { const u = p?.image?.url || p?.image_url || (typeof p?.image === 'string' ? p.image : ''); return u ? <img src={u} alt={p.name} className="admin__thumb" /> : <span className="badge badge--muted">—</span>; })()}
+                    </td>
                     <td>
                       <div className="table__cell-title">{p.name}</div>
                       {p.description && (

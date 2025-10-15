@@ -38,10 +38,11 @@ export async function xFetch(path, { method = 'GET', params, body, headers } = {
     return null;
   }
   const url = withQuery(`${BASE_URL}${path}`, params);
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
   const init = {
     method,
-    headers: buildHeaders({ 'Content-Type': 'application/json', ...headers }),
-    body: body ? JSON.stringify(body) : undefined,
+    headers: isFormData ? buildHeaders(headers) : buildHeaders({ 'Content-Type': 'application/json', ...headers }),
+    body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
   };
   const res = await fetch(url, init);
   const text = await res.text();
