@@ -248,6 +248,27 @@ a { color: var(--color-accent); }
 .footer__hours .opening-hours ul { grid-template-columns: 1fr 1fr; }
 .footer__hours .opening-hours li { padding: 0.25rem 0.5rem; }
 .footer__hours .status { margin-top: 0.5rem; }
+
+/* Login (Instagram-like) */
+.login-instagram { min-height: calc(100vh - 140px); display: grid; place-items: center; padding: 2rem 1rem; }
+.login-card { width: 350px; background: var(--color-charcoal); color: var(--color-text); border: 1px solid rgba(184,115,51,0.35); border-radius: 8px; padding: 1.75rem; box-shadow: 0 6px 16px rgba(0,0,0,0.45); }
+.login-card--secondary { margin-top: 0.75rem; text-align: center; background: var(--color-charcoal); border: 1px solid rgba(184,115,51,0.35); border-radius: 8px; padding: 1rem; }
+.login-card a { color: var(--color-accent); text-decoration: none; }
+.login-card a:hover { text-decoration: underline; }
+.login-card__header { text-align: center; margin-bottom: 1rem; }
+.login-logo { width: 84px; height: 84px; border-radius: 50%; border: 2px solid var(--color-accent); object-fit: cover; display: inline-block; }
+.login-title { margin: 0.5rem 0 0; font-size: 1.25rem; color: var(--color-text); }
+.login-info { text-align: center; font-size: 0.95rem; margin: 0.25rem 0 0.75rem; color: var(--color-text); opacity: 0.9; }
+.login-form { display: grid; gap: 0.6rem; }
+.login-input { background: var(--color-smoke-gray); border: 1px solid rgba(184,115,51,0.3); border-radius: 4px; padding: 0.6rem 0.75rem; font-size: 0.95rem; color: #fff; }
+.login-input::placeholder { color: rgba(255,255,255,0.75); }
+.login-input:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 0.25rem rgba(212,175,55,0.25); }
+.login-password { position: relative; }
+.login-toggle { position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--color-accent); cursor: pointer; font-size: 0.9rem; }
+.login-submit { margin-top: 0.35rem; width: 100%; }
+.login-error { background: rgba(184,115,51,0.12); border: 1px solid var(--color-warm-copper); color: var(--color-text); padding: 0.5rem; border-radius: 6px; font-size: 0.9rem; }
+.login-divider { display: flex; align-items: center; gap: 0.75rem; margin: 0.5rem 0; color: var(--color-text); opacity: 0.85; font-size: 0.9rem; }
+.login-divider::before, .login-divider::after { content: ""; height: 1px; background: rgba(184,115,51,0.3); flex: 1; }
 @media (max-width: 768px) {
   .footer__inner { grid-template-columns: 1fr; }
 }

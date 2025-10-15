@@ -1,5 +1,5 @@
 import './App.css'
-import { useNavigate, Routes, Route } from 'react-router-dom'
+import { useNavigate, Routes, Route, Navigate } from 'react-router-dom'
 import { createReservation } from './api/xano.js'
 import Home from './pages/Home.jsx'
 import MenuPage from './pages/MenuPage.jsx'
@@ -8,9 +8,11 @@ import CartPage from './pages/CartPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import AdminProductsPage from './pages/AdminProductsPage.jsx'
 import { AnnouncementBar, Navbar, Footer } from './components'
+import { useAuth } from './context/AuthContext.jsx'
 
 function App() {
   const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
 
   const handleReservationSubmit = async (data) => {
     // Si está configurado Xano, intentamos enviar; si no, mostramos el resumen como antes.
@@ -50,7 +52,7 @@ function App() {
         <Route path="/inicio" element={<Home onReserveClick={() => navigate('/reservas')} />} />
         <Route path="/menu" element={<MenuPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/admin/products" element={<AdminProductsPage />} />
+        <Route path="/admin/products" element={isAuthenticated ? <AdminProductsPage /> : <Navigate to="/login" replace />} />
         <Route path="/reservas" element={<ReservationsPage onSubmit={handleReservationSubmit} />} />
         <Route path="/carrito" element={<CartPage />} />
         <Route path="*" element={<Home onReserveClick={() => navigate('/reservas')} />} />

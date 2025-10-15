@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export function Navbar({ brand = 'Bar Pirata', links = defaultLinks, onLinkClick }) {
   const [open, setOpen] = useState(false);
   const { items } = useCart() || {};
+  const { isAuthenticated, logout } = useAuth() || {};
   const count = (items || []).reduce((sum, i) => sum + (i.qty || 0), 0);
 
   const handleClick = () => {
@@ -33,6 +35,14 @@ export function Navbar({ brand = 'Bar Pirata', links = defaultLinks, onLinkClick
               )}
             </Link>
           ))}
+          {isAuthenticated ? (
+            <>
+              <Link to="/admin/products" onClick={handleClick}>Admin</Link>
+              <button className="btn btn--ghost" onClick={() => { logout?.(); handleClick(); }}>Salir</button>
+            </>
+          ) : (
+            <Link to="/login" onClick={handleClick}>Login</Link>
+          )}
         </nav>
       </div>
     </header>
@@ -46,5 +56,4 @@ const defaultLinks = [
   { label: 'Eventos', to: '/inicio#eventos' },
   { label: 'Contacto', to: '/inicio#contacto' },
   { label: 'Carrito', to: '/carrito' },
-  { label: 'Login', to: '/login' },
 ];

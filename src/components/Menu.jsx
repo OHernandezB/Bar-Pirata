@@ -1,13 +1,52 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MenuItemCard } from './MenuItemCard.jsx';
+import { getProducts } from '../api/xano.js';
 
-export function Menu({ categories = defaultCategories }) {
-  const [active, setActive] = useState(Object.keys(categories)[0]);
+export function Menu({ categories: initialCategories = defaultCategories }) {
+  const [categories, setCategories] = useState(initialCategories);
+  const [active, setActive] = useState(Object.keys(initialCategories)[0]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const data = await getProducts();
+        const arr = Array.isArray(data) ? data : (data?.items || []);
+        if (arr.length > 0) {
+          const grouped = arr.reduce((acc, p) => {
+            const cat = p.category || 'Otros';
+            if (!acc[cat]) acc[cat] = [];
+            acc[cat].push({
+              name: p.name || p.title || `Producto ${p.id || ''}`,
+              description: p.description || '',
+              price: p.price,
+              tags: Array.isArray(p.tags) ? p.tags : [],
+            });
+            return acc;
+          }, {});
+          setCategories(grouped);
+          setActive(Object.keys(grouped)[0]);
+        }
+      } catch (err) {
+        console.error('getProducts error', err);
+        setError('No se pudo cargar el menú desde Xano. Se muestra menú por defecto.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
   const items = categories[active] || [];
 
   return (
     <section id="menu" className="menu">
       <h2>Menú</h2>
+      {loading && <p>Cargando menú…</p>}
+      {error && <div className="map__placeholder" style={{ border: '1px solid #b87333' }}>{error}</div>}
       <div className="menu__tabs">
         {Object.keys(categories).map((cat) => (
           <button key={cat} className={`tab ${active === cat ? 'is-active' : ''}`} onClick={() => setActive(cat)}>

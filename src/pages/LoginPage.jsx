@@ -7,6 +7,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -30,21 +31,54 @@ export default function LoginPage() {
   }
 
   return (
-    <main id="login" style={{ width: 'min(100%, 640px)', margin: '2rem auto', padding: '1rem' }}>
-      <h2>Iniciar sesión</h2>
-      {isAuthenticated && <p>Ya estás autenticado. Puedes ir al panel de productos.</p>}
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '0.75rem' }}>
-        <label>
-          Correo
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
-        <label>
-          Contraseña
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </label>
-        <button className="btn" type="submit" disabled={loading}>{loading ? 'Ingresando…' : 'Ingresar'}</button>
-        {error && <div className="map__placeholder" style={{ border: '1px solid #b87333' }}>{error}</div>}
-      </form>
+    <main className="login-instagram">
+      <div className="login-card">
+        <div className="login-card__header">
+          <img src="/IMG/logo-bar-pirata.png" alt="Bar Pirata" className="login-logo" />
+          <h2 className="login-title">Iniciar sesión</h2>
+        </div>
+        {isAuthenticated && (
+          <p className="login-info">Ya estás autenticado. Puedes ir al panel de productos.</p>
+        )}
+        <form onSubmit={handleSubmit} className="login-form">
+          <input
+            className="login-input"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Teléfono, usuario o correo electrónico"
+            required
+          />
+          <div className="login-password">
+            <input
+              className="login-input"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+              required
+            />
+            <button type="button" className="login-toggle" onClick={() => setShowPassword(v => !v)}>
+              {showPassword ? 'Ocultar' : 'Mostrar'}
+            </button>
+          </div>
+          <button className="btn login-submit" type="submit" disabled={loading}>
+            {loading ? 'Ingresando…' : 'Ingresar'}
+          </button>
+          {error && <div className="login-error">{error}</div>}
+          <div className="login-divider">o</div>
+          <div className="login-meta">
+            <a href="#" onClick={(e) => e.preventDefault()}>¿Olvidaste tu contraseña?</a>
+          </div>
+        </form>
+      </div>
+
+      <div className="login-card login-card--secondary">
+        <p>
+          ¿No tienes una cuenta?{' '}
+          <a href="#" onClick={(e) => e.preventDefault()}>Regístrate</a>
+        </p>
+      </div>
     </main>
   )
 }
