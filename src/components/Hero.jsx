@@ -5,6 +5,7 @@ export function Hero({
   subtitle = 'Cócteles artesanales, buena música y amigos',
   ctaText = 'Reservar mesa',
   onCtaClick,
+  logoSrc,
   images = defaultImages,
   intervalMs = 5000,
 }) {
@@ -29,9 +30,15 @@ export function Hero({
       <div className="hero__overlay" />
 
       <div className="hero__content">
-        <h1>{title}</h1>
-        <p>{subtitle}</p>
-        <button className="hero__cta" onClick={onCtaClick}>{ctaText}</button>
+        {logoSrc ? (
+          <img src={logoSrc} alt={title} className="hero__logo" />
+        ) : (
+          <h1>{title}</h1>
+        )}
+        {subtitle && <p>{subtitle}</p>}
+        {ctaText && (
+          <button className="hero__cta" onClick={onCtaClick}>{ctaText}</button>
+        )}
       </div>
     </section>
   );

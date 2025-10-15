@@ -19,8 +19,14 @@ export default function Home({ onReserveClick }) {
     <main id="inicio">
       <Hero
         title="Bar Pirata"
-        subtitle="Cócteles artesanales, buena música y amigos"
-        ctaText="Reservar mesa"
+        logoSrc="/IMG/logo-bar-pirata.png"
+        subtitle=""
+        ctaText=""
+        images={[
+          '/IMG/1.jpg',
+          '/IMG/2.jpg',
+          '/IMG/3.jpg',
+        ]}
         onCtaClick={onReserveClick}
       />
       <Events />

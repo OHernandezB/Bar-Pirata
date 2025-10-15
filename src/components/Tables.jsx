@@ -21,47 +21,46 @@ export function Tables({ tables = defaultTables }) {
   }, [tables, queryTime, now]);
 
   return (
-    <section id="mesas" className="tables">
-      <h2>Disponibilidad de mesas</h2>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+    <section id="mesas" className="tables container py-4">
+      <h2 className="mb-3">Disponibilidad de mesas</h2>
+      <div className="d-flex align-items-center gap-2 mb-2">
         <label>Consultar a las:</label>
-        <input type="time" value={queryTime} onChange={(e) => setQueryTime(e.target.value)} />
+        <input className="form-control form-control-sm" style={{ maxWidth: '150px' }} type="time" value={queryTime} onChange={(e) => setQueryTime(e.target.value)} />
       </div>
       <ul className="tables__grid">
         {computed.map((t) => (
-          <li key={t.id} className="table-card">
-            <div className="table-card__header">
-              <h3>{t.name} <span className="table-card__cap">({t.capacity}p)</span></h3>
-              <span className={`table-card__status ${t.active ? 'is-occupied' : 'is-free'}`}>
+          <li key={t.id} className="table-card card">
+            <div className="table-card__header card-header d-flex justify-content-between align-items-center">
+              <h3 className="m-0">{t.name} <span className="table-card__cap">({t.capacity}p)</span></h3>
+              <span className={`table-card__status badge ${t.active ? 'bg-danger' : 'bg-success'}`}>
                 {t.active ? `Ocupada ${formatRange(t.active)}` : (queryTime ? 'Libre a esa hora' : 'Libre ahora')}
               </span>
             </div>
-            <div className="table-card__details">
+            <div className="table-card__details card-body">
               {t.active ? (
                 <span className="table-card__label">Usada en</span>
               ) : (
                 <span className="table-card__label">Próxima</span>
               )}
-              <span className="table-card__next">{t.active ? formatRange(t.active) : t.next ? formatRange(t.next) : 'Sin reservas próximas'}</span>
-            </div>
-            <div style={{ marginTop: '0.5rem' }}>
-              <button
-                className="btn"
-                onClick={() => {
-                  const selectedTime = queryTime || '';
-                  cart?.setReservation?.({ ...(cart?.reservation || {}), table: t.id, time: selectedTime });
-                  // Si no estamos ya en /reservas, navegamos.
-                  try { navigate('/reservas'); } catch {}
-                }}
-                disabled={Boolean(t.active)}
-              >
-                Elegir mesa
-              </button>
+              <span className="table-card__next ms-2">{t.active ? formatRange(t.active) : t.next ? formatRange(t.next) : 'Sin reservas próximas'}</span>
+              <div className="mt-3">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    const selectedTime = queryTime || '';
+                    cart?.setReservation?.({ ...(cart?.reservation || {}), table: t.id, time: selectedTime });
+                    try { navigate('/reservas'); } catch {}
+                  }}
+                  disabled={Boolean(t.active)}
+                >
+                  Elegir mesa
+                </button>
+              </div>
             </div>
             {t.bookings?.length > 0 && (
-              <div className="table-card__schedule">
+              <div className="table-card__schedule card-body pt-0">
                 <span className="table-card__label">Horarios de hoy:</span>
-                <span>
+                <span className="ms-2">
                   {t.bookings.map((b, idx) => (
                     <span key={idx} className="table-card__slot">
                       {b.start}–{b.end}{idx < t.bookings.length - 1 ? ', ' : ''}

@@ -46,4 +46,5 @@ const defaultLinks = [
   { label: 'Eventos', to: '/inicio#eventos' },
   { label: 'Contacto', to: '/inicio#contacto' },
   { label: 'Carrito', to: '/carrito' },
+  { label: 'Login', to: '/login' },
 ];

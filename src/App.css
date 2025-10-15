@@ -3,18 +3,25 @@
   /* Palette (imagen) */
   --color-charcoal: #1C1C1C; /* Negro carbón */
   --color-whiskey-gold: #D4AF37; /* Dorado whisky */
-  --color-dark-wine: #5A1A01; /* Vino tinto oscuro */
+  --color-dark-wine: #800020; /* Rojo burdeos */
   --color-warm-copper: #B87333; /* Cobre cálido */
-  --color-smoke-gray: #2F2F2F; /* Gris humo */
-  --color-amber: #FFBF00; /* Ámbar */
-  --color-soft-ivory: #F5F5DC; /* Marfil suave */
+  --color-smoke-gray: #2F2F2F; /* Gris humo oscuro para tarjetas */
+  --color-light-smoke: #DCDCDC; /* Gris humo claro (texto y fondos secundarios) */
+  --color-petroleum-blue: #003B46; /* Azul petróleo */
 
   /* Theme mapping */
   --color-bg: var(--color-charcoal);
-  --color-text: var(--color-soft-ivory);
-  --color-button: var(--color-amber);
+  --color-text: var(--color-light-smoke);
+  --color-button: var(--color-warm-copper);
   --color-accent: var(--color-whiskey-gold);
   --max-width: 1200px;
+
+  /* Bootstrap mapping */
+  --bs-body-bg: var(--color-bg);
+  --bs-body-color: var(--color-text);
+  --bs-primary: var(--color-warm-copper);
+  --bs-secondary: var(--color-charcoal);
+  --bs-link-color: var(--color-accent);
 }
 
 /* Global */
@@ -37,7 +44,7 @@ a { color: var(--color-accent); }
 
 /* Announcement Bar */
 .announcement-bar {
-  background: var(--color-amber);
+  background: var(--color-warm-copper);
   color: #1C1C1C;
   text-align: center;
   padding: 0.5rem 1rem;
@@ -121,9 +128,10 @@ a { color: var(--color-accent); }
 .hero__bg { position: absolute; inset: 0; z-index: 0; }
 .hero__slide { position: absolute; inset: 0; background: center/cover no-repeat; opacity: 0; transition: opacity 800ms ease; will-change: opacity; }
 .hero__slide.is-active { opacity: 1; }
-.hero__overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(212,175,55,0.20), rgba(28,28,28,0.75)); }
+.hero__overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(0,59,70,0.45), rgba(28,28,28,0.80)); }
 .hero__content { position: relative; z-index: 2; text-align: center; padding: 4rem 1rem; }
 .hero__content h1 { font-size: clamp(2rem, 6vw, 4rem); margin: 0 0 0.5rem; }
+.hero__logo { width: clamp(120px, 22vw, 180px); height: clamp(120px, 22vw, 180px); border-radius: 50%; object-fit: cover; display: inline-block; border: 3px solid var(--color-old-gold); box-shadow: 0 6px 16px rgba(0,0,0,0.55); margin: 0 0 0.5rem; background: var(--color-bg); }
 .hero__content p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 1.25rem; }
 .hero__cta { background: var(--color-button); color: #fff; border: none; padding: 0.75rem 1.25rem; border-radius: 6px; cursor: pointer; }
 .hero__cta:hover { filter: brightness(1.1); }
@@ -159,12 +167,19 @@ a { color: var(--color-accent); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn--ghost { background: transparent; border: 1px solid var(--color-accent); color: var(--color-text); border-radius: 6px; padding: 0.5rem 0.75rem; }
 .btn--ghost:hover { background: var(--color-accent); color: var(--color-charcoal); }
+/* Variante de peligro para cancelar reservas */
+.btn--danger { border-color: var(--color-burgundy-red); color: var(--color-text); }
+.btn--danger:hover { background: var(--color-burgundy-red); color: #fff; }
 
 /* Reservations */
 .reservations { width: min(100%, var(--max-width)); margin: 2rem auto; padding: 0 1rem; }
 .reservations h2 { border-bottom: 2px solid var(--color-accent); padding-bottom: 0.5rem; margin-bottom: 1rem; }
 .reservations__form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; }
-.reservations__form input { background: var(--color-smoke-gray); color: var(--color-text); border: 1px solid rgba(184,115,51,0.3); border-radius: 6px; padding: 0.6rem; }
+.reservations__form input { background: var(--color-smoke-gray); color: #fff; border: 1px solid rgba(184,115,51,0.3); border-radius: 6px; padding: 0.6rem; }
+.reservations__form input::placeholder { color: rgba(255,255,255,0.8); }
+.reservations__form .form-control { background: var(--color-smoke-gray); color: #fff; border: 1px solid rgba(184,115,51,0.3); }
+.reservations__form .form-control::placeholder { color: rgba(255,255,255,0.8); }
+.reservations__form .form-control:focus { border-color: var(--color-accent); box-shadow: 0 0 0 0.25rem rgba(212,175,55,0.25); }
 .reservations__form button { grid-column: 1 / -1; background: var(--color-button); color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; }
 .reservations__form button:hover { filter: brightness(1.1); }
 
@@ -189,6 +204,9 @@ a { color: var(--color-accent); }
 .tables { width: min(100%, var(--max-width)); margin: 2rem auto; padding: 0 1rem; }
 .tables h2 { border-bottom: 2px solid var(--color-accent); padding-bottom: 0.5rem; margin-bottom: 1rem; }
 .tables__grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem; }
+.tables .form-control { background: var(--color-smoke-gray); color: #fff; border: 1px solid rgba(184,115,51,0.3); }
+.tables .form-control::placeholder { color: rgba(255,255,255,0.8); }
+.tables .form-control:focus { border-color: var(--color-accent); box-shadow: 0 0 0 0.25rem rgba(212,175,55,0.25); }
 .table-card { background: var(--color-smoke-gray); border: 1px solid rgba(184,115,51,0.25); border-radius: 8px; padding: 0.75rem; }
 .table-card__header { display: flex; justify-content: space-between; align-items: baseline; }
 .table-card__cap { font-weight: 400; opacity: 0.8; font-size: 0.9rem; }
@@ -243,7 +261,7 @@ a { color: var(--color-accent); }
 .cart__item-info { display: flex; gap: 0.75rem; align-items: baseline; }
 .cart__item-info .price { color: var(--color-accent); font-weight: 600; }
 .cart__item-actions { display: flex; gap: 0.5rem; align-items: center; }
-.cart__item-actions input { width: 60px; background: var(--color-smoke-gray); color: var(--color-text); border: 1px solid rgba(184,115,51,0.3); border-radius: 6px; padding: 0.35rem; }
+.cart__item-actions input { width: 60px; background: var(--color-smoke-gray); color: #fff; border: 1px solid rgba(184,115,51,0.3); border-radius: 6px; padding: 0.35rem; }
 .cart__total { text-align: right; font-weight: 700; }
 .cart__reservation { margin-top: 1.5rem; }
 .cart__reservation-details p { margin: 0.25rem 0; }
