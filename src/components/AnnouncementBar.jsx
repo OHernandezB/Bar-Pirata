@@ -18,5 +18,5 @@ export function AnnouncementBar({ messages = defaultMessages, intervalMs = 5000,
 const defaultMessages = [
   'Happy Hour: 6–8 pm',
   'Música en vivo este viernes',
-  'Reservas abiertas: ¡asegura tu mesa!'
+  'Prueba nuestros cócteles de autor'
 ];

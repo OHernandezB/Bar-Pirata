@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { login as xanoLogin, setAuthToken } from '../api/xano.js'
+import { login as xanoLogin, setAuthToken, getMe } from '../api/xano.js'
 
 const AuthContext = createContext(null)
 
@@ -17,6 +17,15 @@ export function AuthProvider({ children }) {
     if (u) {
       try { setUser(JSON.parse(u)) } catch {}
     }
+    // Si hay token pero no usuario, intentar obtener perfil
+    if (t && !user) {
+      getMe().then((me) => {
+        if (me) {
+          setUser(me)
+          try { localStorage.setItem('xano_user', JSON.stringify(me)) } catch {}
+        }
+      }).catch(() => {})
+    }
   }, [])
 
   const login = async (email, password) => {
@@ -29,7 +38,14 @@ export function AuthProvider({ children }) {
       localStorage.setItem('xano_token', tok)
     }
     // Usuario/perfil
-    const usr = data?.user || data?.profile || data
+    let usr = data?.user || data?.profile || data
+    // Enriquecer con /me si está disponible
+    try {
+      if (!usr || !usr.role || !usr.email) {
+        const me = await getMe()
+        if (me) usr = me
+      }
+    } catch {}
     if (usr) {
       setUser(usr)
       try { localStorage.setItem('xano_user', JSON.stringify(usr)) } catch {}

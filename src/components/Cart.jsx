@@ -1,10 +1,8 @@
-import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { formatCLP } from '../utils/format.js';
 
 export function Cart() {
-  const { items, reservation, updateQty, removeItem, clearCart, total, setReservation } = useCart() || {};
-  const navigate = useNavigate();
+  const { items, updateQty, removeItem, clearCart, total } = useCart() || {};
 
   const hasItems = (items?.length || 0) > 0;
 
@@ -33,35 +31,7 @@ export function Cart() {
         </div>
       )}
 
-      <div className="cart__reservation">
-        <h3>Reserva</h3>
-        {reservation ? (
-          <div className="cart__reservation-details">
-            <p><strong>Nombre:</strong> {reservation.name}</p>
-            <p><strong>RUT:</strong> {reservation.rut}</p>
-            <p><strong>Correo:</strong> {reservation.email}</p>
-            <p><strong>Teléfono:</strong> {reservation.phone}</p>
-            {reservation.time && <p><strong>Hora:</strong> {reservation.time}</p>}
-            {reservation.table && <p><strong>Mesa:</strong> {reservation.table}</p>}
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <button className="btn btn--ghost" onClick={() => navigate('/reservas')}>Editar reserva</button>
-              <button
-                className="btn btn--ghost btn--danger"
-                onClick={() => {
-                  setReservation?.(null);
-                }}
-              >
-                Cancelar reserva
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="cart__reservation-empty">
-            <p>No has agregado una reserva.</p>
-            <button className="btn" onClick={() => navigate('/reservas')}>Reservar mesa</button>
-          </div>
-        )}
-      </div>
+      {/* Reservas removidas del proyecto */}
 
       <div className="cart__actions">
         <button className="btn btn--ghost" onClick={clearCart} disabled={!hasItems}>Vaciar carrito</button>

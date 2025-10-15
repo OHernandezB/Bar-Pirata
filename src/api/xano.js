@@ -2,7 +2,6 @@
 // Configuración vía variables de entorno Vite:
 // - VITE_XANO_BASE_URL: e.g. https://x8z5-1234-abc-api.xano.io
 // - VITE_XANO_API_KEY: token de autenticación (opcional)
-// - VITE_XANO_RESERVATIONS_PATH: path del endpoint de reservas, e.g. /api:abc/reservations
 
 const BASE_URL = (import.meta.env.VITE_XANO_BASE_URL || '').replace(/\/$/, '');
 const API_KEY = import.meta.env.VITE_XANO_API_KEY || '';
@@ -57,16 +56,7 @@ export async function xFetch(path, { method = 'GET', params, body, headers } = {
   return data;
 }
 
-// Ejemplo de integración: crear reserva
-const RESERVATIONS_PATH = import.meta.env.VITE_XANO_RESERVATIONS_PATH || '';
-
-export async function createReservation(payload) {
-  if (!BASE_URL || !RESERVATIONS_PATH) {
-    console.warn('[Xano] Falta BASE_URL o RESERVATIONS_PATH.');
-    return null;
-  }
-  return xFetch(RESERVATIONS_PATH, { method: 'POST', body: payload });
-}
+// Reservas removidas del proyecto
 
 // Auth: login
 const LOGIN_PATH = import.meta.env.VITE_XANO_LOGIN_PATH || '';
@@ -77,6 +67,16 @@ export async function login({ email, password }) {
   }
   const data = await xFetch(LOGIN_PATH, { method: 'POST', body: { email, password } });
   return data;
+}
+
+// Perfil del usuario autenticado (opcional)
+const ME_PATH = import.meta.env.VITE_XANO_ME_PATH || '';
+export async function getMe() {
+  if (!BASE_URL || !ME_PATH) {
+    console.warn('[Xano] Falta BASE_URL o ME_PATH.');
+    return null;
+  }
+  return xFetch(ME_PATH, { method: 'GET' });
 }
 
 // Productos (CRUD)

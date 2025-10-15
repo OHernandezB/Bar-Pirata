@@ -4,7 +4,6 @@ import { getProducts } from '../api/xano.js';
 
 export function Menu({ categories: initialCategories = defaultCategories }) {
   const [categories, setCategories] = useState(initialCategories);
-  const [active, setActive] = useState(Object.keys(initialCategories)[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -16,19 +15,14 @@ export function Menu({ categories: initialCategories = defaultCategories }) {
         const data = await getProducts();
         const arr = Array.isArray(data) ? data : (data?.items || []);
         if (arr.length > 0) {
-          const grouped = arr.reduce((acc, p) => {
-            const cat = p.category || 'Otros';
-            if (!acc[cat]) acc[cat] = [];
-            acc[cat].push({
-              name: p.name || p.title || `Producto ${p.id || ''}`,
-              description: p.description || '',
-              price: p.price,
-              tags: Array.isArray(p.tags) ? p.tags : [],
-            });
-            return acc;
-          }, {});
-          setCategories(grouped);
-          setActive(Object.keys(grouped)[0]);
+          const all = arr.map((p) => ({
+            name: p.name || p.title || `Producto ${p.id || ''}`,
+            description: p.description || '',
+            price: p.price,
+            tags: Array.isArray(p.tags) ? p.tags : [],
+          }));
+          // Guardamos en un objeto con única clave para compatibilidad, pero no mostramos tabs
+          setCategories({ Todos: all });
         }
       } catch (err) {
         console.error('getProducts error', err);
@@ -40,20 +34,14 @@ export function Menu({ categories: initialCategories = defaultCategories }) {
     load();
   }, []);
 
-  const items = categories[active] || [];
+  const items = Object.values(categories || {}).flat();
 
   return (
     <section id="menu" className="menu">
       <h2>Menú</h2>
       {loading && <p>Cargando menú…</p>}
       {error && <div className="map__placeholder" style={{ border: '1px solid #b87333' }}>{error}</div>}
-      <div className="menu__tabs">
-        {Object.keys(categories).map((cat) => (
-          <button key={cat} className={`tab ${active === cat ? 'is-active' : ''}`} onClick={() => setActive(cat)}>
-            {cat}
-          </button>
-        ))}
-      </div>
+      {/* Tabs de categorías removidos: se muestran todos los productos */}
       <div className="menu__grid">
         {items.map((item) => (
           <MenuItemCard key={item.name} {...item} />

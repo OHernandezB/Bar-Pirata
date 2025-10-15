@@ -1,0 +1,163 @@
+/* Admin panel styles (scoped) */
+.admin {
+  width: min(100%, 1000px);
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.admin__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.admin__actions .btn {
+  min-width: 140px;
+}
+
+.admin__hint {
+  color: #aaa;
+}
+
+.admin__section {
+  background: #121212;
+  border: 1px solid #b87333; /* copper */
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.admin__subheader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.admin__search {
+  max-width: 300px;
+}
+
+.admin__form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field--full {
+  grid-column: 1 / -1;
+}
+
+.form-input,
+.form-textarea {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  color: #eee;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #b87333;
+  box-shadow: 0 0 0 3px rgba(184, 115, 51, 0.25);
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+}
+
+.admin__status {
+  color: #ddd;
+}
+
+.admin__error {
+  border: 1px solid #b87333;
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: rgba(184,115,51,0.07);
+}
+
+.admin__empty {
+  text-align: center;
+  color: #aaa;
+  padding: 1rem 0.5rem;
+}
+
+.admin .table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin .table thead th {
+  text-align: left;
+  background: #181818;
+  border-bottom: 1px solid #333;
+  padding: 0.6rem 0.5rem;
+}
+
+.admin .table tbody td {
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid #222;
+}
+
+.admin .table--admin tbody tr:nth-child(odd) {
+  background: #151515;
+}
+
+.admin .table__cell-title {
+  font-weight: 600;
+  color: #eee;
+}
+
+.admin .table__cell-desc {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.admin .table__cell-price {
+  font-variant-numeric: tabular-nums;
+}
+
+.admin .badge {
+  display: inline-block;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(184,115,51,0.15);
+  color: #e7b892;
+  border: 1px solid rgba(184,115,51,0.35);
+}
+
+.admin .badge--muted {
+  background: #222;
+  color: #999;
+  border-color: #333;
+}
+
+.admin .btn {
+  background: #b87333;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  cursor: pointer;
+}
+
+.admin .btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.admin .btn--danger {
+  background: #8b2e2e;
+}

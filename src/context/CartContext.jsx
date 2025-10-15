@@ -4,7 +4,6 @@ const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]); // { id, name, price, qty }
-  const [reservation, setReservation] = useState(null); // { name, rut, email, phone }
 
   const addItem = (item, qty = 1) => {
     if (!item || !item.id) return;
@@ -25,7 +24,7 @@ export function CartProvider({ children }) {
 
   const total = useMemo(() => items.reduce((sum, i) => sum + (Number(i.price) || 0) * (Number(i.qty) || 0), 0), [items]);
 
-  const value = { items, reservation, addItem, removeItem, updateQty, clearCart, setReservation, total };
+  const value = { items, addItem, removeItem, updateQty, clearCart, total };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

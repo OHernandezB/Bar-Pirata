@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 export function Hero({
   title = 'Bar Pirata',
   subtitle = 'Cócteles artesanales, buena música y amigos',
-  ctaText = 'Reservar mesa',
+  ctaText = 'Ver menú',
   onCtaClick,
   logoSrc,
   images = defaultImages,

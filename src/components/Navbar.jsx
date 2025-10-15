@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 export function Navbar({ brand = 'Bar Pirata', links = defaultLinks, onLinkClick }) {
   const [open, setOpen] = useState(false);
   const { items } = useCart() || {};
-  const { isAuthenticated, logout } = useAuth() || {};
+  const { isAuthenticated, logout, user } = useAuth() || {};
   const count = (items || []).reduce((sum, i) => sum + (i.qty || 0), 0);
 
   const handleClick = () => {
@@ -52,7 +52,6 @@ export function Navbar({ brand = 'Bar Pirata', links = defaultLinks, onLinkClick
 const defaultLinks = [
   { label: 'Inicio', to: '/inicio' },
   { label: 'Menú', to: '/menu' },
-  { label: 'Reservas', to: '/reservas' },
   { label: 'Eventos', to: '/inicio#eventos' },
   { label: 'Contacto', to: '/inicio#contacto' },
   { label: 'Carrito', to: '/carrito' },

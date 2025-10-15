@@ -31,7 +31,8 @@ html, body, #root {
 }
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.6;
+  font-size: 16.5px;
+  line-height: 1.7;
 }
 #root {
   max-width: none;
@@ -80,7 +81,7 @@ a { color: var(--color-accent); }
   border-color: var(--color-button); 
 }
 .navbar__links { display: flex; gap: 0.75rem; }
-.navbar__links a { margin: 0 0.5rem; text-decoration: none; color: var(--color-text); opacity: 0.9; }
+.navbar__links a { margin: 0 0.5rem; text-decoration: none; color: var(--color-text); opacity: 1; }
 .navbar__links a:hover { color: var(--color-accent); }
 /* Cart badge */
 .navbar__cart-count { 
@@ -115,6 +116,8 @@ a { color: var(--color-accent); }
     pointer-events: auto;
   }
 }
+
+.navbar__user { margin-left: 0.5rem; opacity: 0.75; font-size: 0.85rem; }
 
 /* Hero */
 .hero {
@@ -156,6 +159,7 @@ a { color: var(--color-accent); }
 .menu-item-card__header { display: flex; justify-content: space-between; align-items: baseline; }
 .menu-item-card__price { color: var(--color-accent); font-weight: 700; }
 .menu-item-card__desc { opacity: 0.9; margin-top: 0.25rem; }
+.menu-item-card__desc { font-size: 1rem; }
 .menu-item-card__tags .tag { display: inline-block; border: 1px dashed rgba(212,175,55,0.6); color: var(--color-accent); padding: 0.1rem 0.4rem; margin-right: 0.25rem; border-radius: 4px; font-size: 0.8rem; }
 /* Menu item actions */
 .menu-item-card__actions { margin-top: 0.75rem; }
@@ -168,20 +172,11 @@ a { color: var(--color-accent); }
 .btn--ghost { background: transparent; border: 1px solid var(--color-accent); color: var(--color-text); border-radius: 6px; padding: 0.5rem 0.75rem; }
 .btn--ghost:hover { background: var(--color-accent); color: var(--color-charcoal); }
 /* Variante de peligro para cancelar reservas */
+
 .btn--danger { border-color: var(--color-burgundy-red); color: var(--color-text); }
 .btn--danger:hover { background: var(--color-burgundy-red); color: #fff; }
 
-/* Reservations */
-.reservations { width: min(100%, var(--max-width)); margin: 2rem auto; padding: 0 1rem; }
-.reservations h2 { border-bottom: 2px solid var(--color-accent); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-.reservations__form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; }
-.reservations__form input { background: var(--color-smoke-gray); color: #fff; border: 1px solid rgba(184,115,51,0.3); border-radius: 6px; padding: 0.6rem; }
-.reservations__form input::placeholder { color: rgba(255,255,255,0.8); }
-.reservations__form .form-control { background: var(--color-smoke-gray); color: #fff; border: 1px solid rgba(184,115,51,0.3); }
-.reservations__form .form-control::placeholder { color: rgba(255,255,255,0.8); }
-.reservations__form .form-control:focus { border-color: var(--color-accent); box-shadow: 0 0 0 0.25rem rgba(212,175,55,0.25); }
-.reservations__form button { grid-column: 1 / -1; background: var(--color-button); color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; }
-.reservations__form button:hover { filter: brightness(1.1); }
+/* (Reservas removidas) */
 
 /* Events */
 .events { width: min(100%, var(--max-width)); margin: 2rem auto; padding: 0 1rem; }
@@ -200,22 +195,7 @@ a { color: var(--color-accent); }
 .gallery__item { border: none; padding: 0; background: transparent; cursor: pointer; }
 .gallery__item img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid rgba(184,115,51,0.25); }
 
-/* Tables */
-.tables { width: min(100%, var(--max-width)); margin: 2rem auto; padding: 0 1rem; }
-.tables h2 { border-bottom: 2px solid var(--color-accent); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-.tables__grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem; }
-.tables .form-control { background: var(--color-smoke-gray); color: #fff; border: 1px solid rgba(184,115,51,0.3); }
-.tables .form-control::placeholder { color: rgba(255,255,255,0.8); }
-.tables .form-control:focus { border-color: var(--color-accent); box-shadow: 0 0 0 0.25rem rgba(212,175,55,0.25); }
-.table-card { background: var(--color-smoke-gray); border: 1px solid rgba(184,115,51,0.25); border-radius: 8px; padding: 0.75rem; }
-.table-card__header { display: flex; justify-content: space-between; align-items: baseline; }
-.table-card__cap { font-weight: 400; opacity: 0.8; font-size: 0.9rem; }
-.table-card__status { font-weight: 700; }
-.table-card__status.is-occupied { color: var(--color-accent); }
-.table-card__details { margin-top: 0.25rem; display: flex; gap: 0.35rem; align-items: baseline; }
-.table-card__label { opacity: 0.8; }
-.table-card__schedule { margin-top: 0.35rem; }
-.table-card__slot { display: inline-block; margin-right: 0.15rem; }
+/* (Mesas removidas) */
 .gallery__modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: grid; place-items: center; z-index: 1000; }
 .gallery__close { position: absolute; top: 1rem; right: 1rem; background: var(--color-button); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; }
 .gallery__modal img { max-width: 90vw; max-height: 80vh; border-radius: 8px; }
@@ -284,6 +264,5 @@ a { color: var(--color-accent); }
 .cart__item-actions { display: flex; gap: 0.5rem; align-items: center; }
 .cart__item-actions input { width: 60px; background: var(--color-smoke-gray); color: #fff; border: 1px solid rgba(184,115,51,0.3); border-radius: 6px; padding: 0.35rem; }
 .cart__total { text-align: right; font-weight: 700; }
-.cart__reservation { margin-top: 1.5rem; }
-.cart__reservation-details p { margin: 0.25rem 0; }
+/* (Sección de reserva removida) */
 .cart__actions { display: flex; gap: 0.5rem; margin-top: 1.5rem; }
