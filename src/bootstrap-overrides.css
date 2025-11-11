@@ -1,0 +1,14 @@
+/* Overrides específicos de Bootstrap (global para todas las tablas de Bootstrap) */
+.table {
+  /* Fondo base de celdas */
+  --bs-table-bg: transparent;
+  /* Fondos de filas con rayas */
+  --bs-table-striped-bg: transparent;
+  /* Fondo en hover */
+  --bs-table-hover-bg: transparent;
+}
+
+/* Asegurar transparencia en celdas según reglas internas de Bootstrap */
+.table > :not(caption) > * > * {
+  background-color: transparent !important;
+}

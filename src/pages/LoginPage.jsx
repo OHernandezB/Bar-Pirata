@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function LoginPage() {
-  const { login, isAuthenticated } = useAuth()
+  const { login, isAuthenticated, isAdmin } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -11,20 +11,28 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // Si ya está autenticado, redirige (especialmente útil tras refrescar)
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(isAdmin ? '/admin' : '/', { replace: true })
+    }
+  }, [isAuthenticated, isAdmin, navigate])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
     try {
-      const { token } = await login(email, password)
-      if (token) {
-        navigate('/admin/products')
+      const ok = await login(email, password) // <- login() devuelve booleano
+      if (ok) {
+        // Ir directo al panel (puedes cambiar a '/admin' o '/admin/productos')
+        navigate('/admin', { replace: true })
       } else {
-        setError('Login sin token devuelto. Revisa configuración de Xano.')
+        setError('No se pudo iniciar sesión. Verifica tus credenciales.')
       }
     } catch (err) {
       console.error('Login error', err)
-      setError('Error al iniciar sesión. Ver consola para más detalles.')
+      setError('Error al iniciar sesión. Revisa la consola para más detalles.')
     } finally {
       setLoading(false)
     }
@@ -37,18 +45,17 @@ export default function LoginPage() {
           <img src="/IMG/logo-bar-pirata.png" alt="Bar Pirata" className="login-logo" />
           <h2 className="login-title">Iniciar sesión</h2>
         </div>
-        {isAuthenticated && (
-          <p className="login-info">Ya estás autenticado. Puedes ir al panel de productos.</p>
-        )}
+
         <form onSubmit={handleSubmit} className="login-form">
           <input
             className="login-input"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Teléfono, usuario o correo electrónico"
+            placeholder="Correo electrónico"
             required
           />
+
           <div className="login-password">
             <input
               className="login-input"
@@ -58,17 +65,24 @@ export default function LoginPage() {
               placeholder="Contraseña"
               required
             />
-            <button type="button" className="login-toggle" onClick={() => setShowPassword(v => !v)}>
+            <button
+              type="button"
+              className="login-toggle"
+              onClick={() => setShowPassword(v => !v)}
+            >
               {showPassword ? 'Ocultar' : 'Mostrar'}
             </button>
           </div>
+
           <button className="btn login-submit" type="submit" disabled={loading}>
             {loading ? 'Ingresando…' : 'Ingresar'}
           </button>
+
           {error && <div className="login-error">{error}</div>}
+
           <div className="login-divider">o</div>
           <div className="login-meta">
-            <a href="#" onClick={(e) => e.preventDefault()}>¿Olvidaste tu contraseña?</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); navigate('/recuperar') }}>¿Olvidaste tu contraseña?</a>
           </div>
         </form>
       </div>
@@ -76,7 +90,7 @@ export default function LoginPage() {
       <div className="login-card login-card--secondary">
         <p>
           ¿No tienes una cuenta?{' '}
-          <a href="#" onClick={(e) => e.preventDefault()}>Regístrate</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/signup') }}>Regístrate</a>
         </p>
       </div>
     </main>

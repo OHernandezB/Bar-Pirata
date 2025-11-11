@@ -20,12 +20,14 @@ export default function Home({ onReserveClick }) {
       <Hero
         title="Bar Pirata"
         logoSrc="/IMG/logo-bar-pirata.png"
-        subtitle=""
+        subtitle="Cerveza artesanal, tragos, cócteles y buena compañía"
         ctaText=""
         images={[
           '/IMG/1.jpg',
           '/IMG/2.jpg',
           '/IMG/3.jpg',
+          '/IMG/4.jpg',
+          '/IMG/5.jpg',
         ]}
         onCtaClick={onReserveClick}
       />

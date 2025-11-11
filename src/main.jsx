@@ -7,6 +7,8 @@ import { CartProvider } from './context/CartContext.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 // Importar estilos de Bootstrap (después de los estilos locales para que puedan sobrescribir si es necesario)
 import 'bootstrap/dist/css/bootstrap.min.css'
+// Overrides de Bootstrap: tablas transparentes, striped/hover desactivados
+import './bootstrap-overrides.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

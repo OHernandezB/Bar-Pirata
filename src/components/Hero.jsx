@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 export function Hero({
   title = 'Bar Pirata',
-  subtitle = 'Cócteles artesanales, buena música y amigos',
+  subtitle = 'Cerveza artesanal, tragos, cócteles y buena compañía',
   ctaText = 'Ver menú',
   onCtaClick,
   logoSrc,
@@ -18,27 +18,33 @@ export function Hero({
 
   return (
     <section className="hero">
-      <div className="hero__bg">
-        {images.map((src, i) => (
-          <div
-            key={src}
-            className={`hero__slide ${i === index ? 'is-active' : ''}`}
-            style={{ backgroundImage: `url(${src})` }}
-          />
-        ))}
-      </div>
-      <div className="hero__overlay" />
+      {/* Marco del hero */}
+      <div className="hero__frame">
+        {/* Slides dentro del marco */}
+        <div className="hero__bg">
+          {images.map((src, i) => (
+            <div
+              key={src}
+              className={`hero__slide ${i === index ? 'is-active' : ''}`}
+              style={{ backgroundImage: `url(${src})` }}
+            />
+          ))}
+        </div>
 
-      <div className="hero__content">
-        {logoSrc ? (
-          <img src={logoSrc} alt={title} className="hero__logo" />
-        ) : (
-          <h1>{title}</h1>
-        )}
-        {subtitle && <p>{subtitle}</p>}
-        {ctaText && (
-          <button className="hero__cta" onClick={onCtaClick}>{ctaText}</button>
-        )}
+        {/* Vignette del marco (muy suave) */}
+        <div className="hero__overlay" />
+
+        {/* Contenido centrado: logo + título + subtítulo */}
+        <div className="hero__content">
+          {logoSrc ? (
+            <img src={logoSrc} alt={title} className="hero__logo" />
+          ) : null}
+          <h1 className="hero__title animate-down" aria-label={title}>{title}</h1>
+          <p className="hero__subtitle animate-up" aria-label={subtitle || 'Cerveza artesanal, tragos, cócteles y buena compañía'}>
+            {subtitle || 'Cerveza artesanal, tragos, cócteles y buena compañía'}
+          </p>
+          {ctaText && <button className="hero__cta" onClick={onCtaClick}>{ctaText}</button>}
+        </div>
       </div>
     </section>
   );
