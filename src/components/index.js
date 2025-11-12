@@ -7,4 +7,5 @@ export { MenuItemCard } from './MenuItemCard.jsx';
 export { Events } from './Events.jsx';
 export { Contact } from './Contact.jsx';
 export { Footer } from './Footer.jsx';
+export { SiteHeader } from './SiteHeader.jsx';
 export { Cart } from './Cart.jsx';

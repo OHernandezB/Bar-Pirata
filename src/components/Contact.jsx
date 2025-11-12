@@ -2,7 +2,9 @@ export function Contact({
   address = defaultAddressText,
   addressUrl = defaultAddressUrl,
   phone = '+569 8325 0599',
+  phone2 = '+569 8783 7306',
   email = 'om.hernandez@duocuc.cl',
+  email2 = 'pa.albanese@duocuc.cl',
   mapEmbedUrl = defaultMapEmbedUrl,
   mapImageUrl = defaultMapImageUrl,
 }) {
@@ -15,8 +17,9 @@ export function Contact({
             <strong>Ubicación:</strong> {address}
             {' '}<a href={addressUrl} target="_blank" rel="noreferrer">Ver en Google Maps</a>
           </p>
-          <p>Tel: <a href={`tel:${String(phone).replace(/\s+/g, '')}`}>{phone}</a></p>
-          <p>Email: <a href={`mailto:${email}`}>{email}</a></p>
+          <p>Tel: <a href={`tel:${String(phone).replace(/\s+/g, '')}`}>{phone}</a> o <a href={`tel:${String(phone2).replace(/\s+/g, '')}`}>{phone2}</a></p>
+          <p>Email: <a href={`mailto:${email}`}>{email}</a> o <a href={`mailto:${email2}`}>{email2}</a></p>
+          
         </div>
         <div className="contact__map">
           {mapImageUrl && (
@@ -43,5 +46,5 @@ export function Contact({
 
 const defaultAddressText = 'Carlos Antúnez 2857-2877, Providencia, Región Metropolitana';
 const defaultAddressUrl = 'https://maps.app.goo.gl/TQEDAnuoEp4NgUGJ6';
-const defaultMapImageUrl = 'https://osm-static-maps.herokuapp.com/?height=300&width=600&center=-33.424023,-70.594167&zoom=17&attribution=%C2%A9%20OpenStreetMap-Contributors';
+const defaultMapImageUrl = '';
 const defaultMapEmbedUrl = 'https://www.openstreetmap.org/export/embed.html?bbox=-70.598167,-33.427023,-70.590167,-33.421023&layer=mapnik&marker=-33.424023,-70.594167';

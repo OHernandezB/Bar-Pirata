@@ -1,71 +1,104 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { login as xanoLogin, setAuthToken, getMe } from '../api/xano.js'
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { login as xanoLogin, getMe, setAuthToken } from "../api/xano.js";
 
-const AuthContext = createContext(null)
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState('')
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const t = localStorage.getItem('xano_token')
-    if (t) {
-      setToken(t)
-      setAuthToken(t)
-    }
-    const u = localStorage.getItem('xano_user')
-    if (u) {
-      try { setUser(JSON.parse(u)) } catch {}
-    }
-    // Si hay token pero no usuario, intentar obtener perfil
-    if (t && !user) {
-      getMe().then((me) => {
-        if (me) {
-          setUser(me)
-          try { localStorage.setItem('xano_user', JSON.stringify(me)) } catch {}
-        }
-      }).catch(() => {})
-    }
-  }, [])
+  // --- Función auxiliar para aplicar el usuario cargado ---
+  const applyUser = (me) => {
+    setUser(me || null);
+    const ok = !!me;
+    setIsAuthenticated(ok);
+    setIsAdmin(String(me?.rol || "").toLowerCase() === "administrador");
+  };
 
-  const login = async (email, password) => {
-    const data = await xanoLogin({ email, password })
-    // Intentar detectar token en respuesta común
-    const tok = data?.authToken || data?.token || data?.access_token || data?.jwt || data?.session?.token
-    if (tok) {
-      setToken(tok)
-      setAuthToken(tok)
-      localStorage.setItem('xano_token', tok)
-    }
-    // Usuario/perfil
-    let usr = data?.user || data?.profile || data
-    // Enriquecer con /me si está disponible
+  // --- Carga el usuario actual desde /auth/me ---
+  const loadUser = async () => {
+    setLoading(true);
+    setError("");
     try {
-      if (!usr || !usr.role || !usr.email) {
-        const me = await getMe()
-        if (me) usr = me
-      }
-    } catch {}
-    if (usr) {
-      setUser(usr)
-      try { localStorage.setItem('xano_user', JSON.stringify(usr)) } catch {}
+      const me = await getMe(); // ya hace data?.Self ?? data
+      applyUser(me);
+    } catch (err) {
+      console.error("Error cargando /auth/me:", err);
+      applyUser(null);
+      setError("No se pudo cargar la sesión.");
+    } finally {
+      setLoading(false);
     }
-    return { token: tok, user: usr, raw: data }
-  }
+  };
 
+  // --- Login ---
+  const login = async (email, password) => {
+    setError("");
+    try {
+      const res = await xanoLogin({ email, password });
+
+      // Xano puede devolver el token con distintos nombres
+      const token =
+        res?.authToken ||
+        res?.token ||
+        res?.auth_token ||
+        res?.jwt ||
+        res?.access_token;
+
+      if (!token) throw new Error("El login no devolvió token.");
+
+      // Guardar y aplicar el token
+      localStorage.setItem("token", token);
+      setAuthToken(token);
+
+      // Cargar datos del usuario autenticado
+      await loadUser();
+      return true;
+    } catch (err) {
+      console.error("Error en login:", err);
+      setError("Credenciales inválidas o problema de servidor.");
+      return false;
+    }
+  };
+
+  // --- Logout ---
   const logout = () => {
-    setToken('')
-    setUser(null)
-    setAuthToken('')
-    localStorage.removeItem('xano_token')
-    localStorage.removeItem('xano_user')
-  }
+    localStorage.removeItem("token");
+    setAuthToken("");
+    applyUser(null);
+  };
 
-  const value = useMemo(() => ({ token, user, isAuthenticated: !!token, login, logout }), [token, user])
+  // --- Carga sesión si hay token guardado ---
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setAuthToken(token);
+      loadUser();
+    } else {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  // --- Valor del contexto para los componentes ---
+  const value = useMemo(
+    () => ({
+      user,
+      isAuthenticated,
+      isAdmin,
+      loading,
+      error,
+      login,
+      logout,
+      loadUser,
+    }),
+    [user, isAuthenticated, isAdmin, loading, error]
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
-  return useContext(AuthContext)
-}
+export const useAuth = () => useContext(AuthContext);
