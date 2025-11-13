@@ -76,7 +76,7 @@ body {
   inset: 0;
   z-index: -2;
   /* Fondo centrado con la nueva imagen específica */
-  background: url('/IMG/fondo.png') center center / cover no-repeat fixed;
+  background: url('/IMG/fondo_trago.jpg') center center / cover no-repeat fixed;
 }
 #root::after {
   content: "";
