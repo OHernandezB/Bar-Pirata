@@ -6,7 +6,7 @@ import { getProducts, deleteProduct, getCategories, API_BASE, AUTH_TOKEN, API_OR
 import ImageCarousel from '../components/ImageCarousel.jsx'
 
 export default function AdminProductsPage() {
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, isAdmin, logout } = useAuth()
   const navigate = useNavigate()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
@@ -32,6 +32,7 @@ export default function AdminProductsPage() {
     const sOk = form.stock !== '' && Number.isFinite(Number(form.stock))
     return Boolean(form.name && pOk && sOk)
   }, [form])
+  const canEdit = useMemo(() => !!isAdmin, [isAdmin])
 
   const didLoad = useRef(false)
   const didLoadCats = useRef(false)
@@ -267,6 +268,7 @@ export default function AdminProductsPage() {
 
   const handleCreate = async (e) => {
     e.preventDefault()
+    if (!isAdmin) { alert('Se requiere rol admin para crear productos.'); return }
     if (!canSubmit) return
     setError('')
     try {
@@ -322,6 +324,7 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (id) => {
     if (!id) return
+    if (!isAdmin) { alert('Se requiere rol admin para eliminar productos.'); return }
     if (!confirm('¿Eliminar este producto?')) return
     try {
       await deleteProduct(id)
@@ -351,6 +354,9 @@ export default function AdminProductsPage() {
           <button className="btn" onClick={load} disabled={loading}>{loading ? 'Actualizando…' : 'Refrescar'}</button>
         </div>
       </div>
+      {!canEdit && (
+        <div className="admin__warning">Tu usuario no tiene permisos de edición/eliminación de productos.</div>
+      )}
 
       <section className="admin__section">
         <h3>Crear producto</h3>
@@ -444,7 +450,7 @@ export default function AdminProductsPage() {
             </div>
           </div>
           <div className="form-actions">
-            <button className="btn" type="submit" disabled={!canSubmit}>Crear</button>
+            <button className="btn" type="submit" disabled={!canSubmit || !canEdit}>Crear</button>
           </div>
         </form>
       </section>
@@ -515,7 +521,7 @@ export default function AdminProductsPage() {
                       })()}
                     </td>
                     <td>
-                      <button className="btn btn--danger" onClick={() => handleDelete(p.id || p.uuid || p._id)}>Eliminar</button>
+                      <button className="btn btn--danger" onClick={() => handleDelete(p.id || p.uuid || p._id)} disabled={!canEdit}>Eliminar</button>
                     </td>
                   </tr>
                 ))}

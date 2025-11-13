@@ -24,10 +24,7 @@ export default function LoginPage() {
     setError('')
     try {
       const ok = await login(email, password) // <- login() devuelve booleano
-      if (ok) {
-        // Ir directo al panel (puedes cambiar a '/admin' o '/admin/productos')
-        navigate('/admin', { replace: true })
-      } else {
+      if (!ok) {
         setError('No se pudo iniciar sesión. Verifica tus credenciales.')
       }
     } catch (err) {
