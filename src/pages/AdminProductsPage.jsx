@@ -2,8 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/admin.css'
 import { useAuth } from '../context/AuthContext.jsx'
-import { getProducts, deleteProduct, getCategories, API_BASE, AUTH_TOKEN, API_ORIGIN } from '../api/xano.js'
+import { getProducts, deleteProduct, getCategories } from '../api/xano.js'
 import ImageCarousel from '../components/ImageCarousel.jsx'
+
+// --- Subida y flujo de creación: constantes de API locales (evitan conflictos de import) ---
+const API_ORIGIN = 'https://x8ki-letl-twmt.n7.xano.io'
+const API_BASE = `${API_ORIGIN}/api:SGvG01BZ`
 
 export default function AdminProductsPage() {
   const { isAuthenticated, isAdmin, logout } = useAuth()
@@ -175,38 +179,70 @@ export default function AdminProductsPage() {
     }
   }, [isAuthenticated])
 
-  // --- Flujo de creación con rutas reales de Xano ---
-  const fileToDataURL = (file) => new Promise((resolve, reject) => {
-    const fr = new FileReader()
-    fr.onerror = () => reject(new Error('No se pudo leer el archivo'))
-    fr.onload = () => {
-      const result = String(fr.result || '')
-      if (!result.startsWith('data:')) return reject(new Error('DataURL inválido'))
-      resolve(result)
-    }
-    fr.readAsDataURL(file)
-  })
+  // --- Subida de imágenes (multipart/form-data) y flujo de creación ---
+  function getAuthToken() {
+    // Ajusta si obtienes el token desde context/props
+    return localStorage.getItem('token')
+  }
 
-  const uploadImageLote = async (files) => {
-    const list = Array.from(files || []).filter((f) => f.type?.startsWith('image/'))
-    const content = await Promise.all(list.map(fileToDataURL))
-    if (content.length === 0) throw new Error('No hay imágenes válidas')
+  async function uploadSingleImage(file) {
+    const token = getAuthToken()
+    const formData = new FormData()
+    // nombre EXACTO que espera Xano
+    formData.append('content', file)
+
     const res = await fetch(`${API_BASE}/upload/image`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${AUTH_TOKEN}`,
+        Authorization: `Bearer ${token}`,
+        // NO poner Content-Type en multipart, el navegador lo define solo
       },
-      body: JSON.stringify({ content }),
+      body: formData,
     })
-    if (!res.ok) {
-      const t = await res.text().catch(() => '')
-      throw new Error(`Fallo al subir imágenes (${res.status}): ${t}`)
+
+    let data
+    try {
+      data = await res.json()
+    } catch (e) {
+      console.error('Error parseando JSON de /upload/image', e)
+      throw new Error('Error al leer la respuesta del servidor al subir imagen')
     }
-    const json = await res.json().catch(() => null)
-    const uploadId = json?.upload_id ?? json?.uploadID ?? json?.id
-    if (!Number.isFinite(Number(uploadId))) throw new Error('Respuesta inválida al subir imágenes')
-    return Number(uploadId)
+
+    console.log('Respuesta de /upload/image:', data)
+
+    if (!res.ok) {
+      const msg = data?.message || data?.error || 'Error al subir imagen'
+      throw new Error(msg)
+    }
+
+    // Normalizar respuesta: siempre debe ser un array de metadatos
+    let imagenes = null
+    if (Array.isArray(data)) {
+      imagenes = data
+    } else if (Array.isArray(data?.data)) {
+      imagenes = data.data
+    } else if (Array.isArray(data?.images)) {
+      imagenes = data.images
+    } else if (data && typeof data === 'object') {
+      // soporte por si Xano devuelve un solo objeto
+      imagenes = [data]
+    }
+
+    if (!imagenes) {
+      console.error('Formato inesperado en respuesta de /upload/image:', data)
+      throw new Error('Respuesta inválida al subir imágenes')
+    }
+
+    return imagenes
+  }
+
+  async function uploadImageLote(files) {
+    const todas = []
+    for (const file of Array.from(files || [])) {
+      const metadatos = await uploadSingleImage(file)
+      todas.push(...metadatos)
+    }
+    return todas
   }
 
   const buildPayloadProducto = ({ nombre, descripcion, precio, stock, categoria_id, estado }) => {
@@ -231,39 +267,56 @@ export default function AdminProductsPage() {
     }
   }
 
-  const crearProductoDesdeUpload = async (formData, files) => {
-    if (!files || files.length < 3) {
-      const msg = 'Debes subir al menos 3 imágenes'
-      setError(msg)
-      alert(msg)
-      return null
+  // Flujo final con nombres EXACTOS del backend (nombre_product, categoria_producto_id, imagen_upload)
+  const crearProductoConImagenes = async ({ nombre, codigo, descripcion, precio, stock, activo, categoriaId, files }) => {
+    const token = getAuthToken()
+
+    // 1) Crear producto SIN imágenes
+    const bodyProducto = {
+      nombre_product: String(nombre || '').trim(),
+      codigo: String(codigo || ''),
+      descripcion: String(descripcion || '').trim(),
+      precio: Number(precio),
+      stock: Number(stock),
+      activo: Boolean(activo),
+      categoria_producto_id: Number(categoriaId),
+      imagen_upload: [],
     }
-    const upload_id = await uploadImageLote(files)
-    const payloadBase = buildPayloadProducto({
-      nombre: formData.nombre,
-      descripcion: formData.descripcion,
-      precio: formData.precio,
-      stock: formData.stock,
-      categoria_id: formData.categoria_id,
-      estado: formData.estado,
-    })
-    const body = { upload_id, ...payloadBase, nombre_product: String(formData.nombre || '').trim() }
-    const res = await fetch(`${API_BASE}/create_from_upload`, {
+
+    const resCrear = await fetch(`${API_BASE}/producto`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${AUTH_TOKEN}`,
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(bodyProducto),
     })
-    const json = await res.json().catch(() => null)
-    if (!res.ok || (json && json.ok === false)) {
-      const errMsg = json?.error || `Fallo al crear: ${res.status}`
-      setError(errMsg)
-      alert(errMsg)
-      return null
+    const dataCrear = await resCrear.json().catch(() => null)
+    if (!resCrear.ok) {
+      const msg = dataCrear?.message || dataCrear?.error || `Error al crear producto (${resCrear.status})`
+      throw new Error(msg)
     }
-    return json
+    const productoId = dataCrear?.id
+    if (!productoId) throw new Error('Xano no devolvió id de producto')
+
+    // 2) Subir imágenes una por una
+    const imagenes = await uploadImageLote(files || [])
+
+    // 3) Asociar todas las imágenes al producto
+    const resPatch = await fetch(`${API_BASE}/producto/${productoId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ imagen_upload: imagenes }),
+    })
+    const dataPatch = await resPatch.json().catch(() => null)
+    if (!resPatch.ok) {
+      const msg = dataPatch?.message || dataPatch?.error || `Error al asociar imágenes (${resPatch.status})`
+      throw new Error(msg)
+    }
+    return { id: productoId }
   }
 
   const handleCreate = async (e) => {
@@ -276,17 +329,18 @@ export default function AdminProductsPage() {
         ? Number(selectedCat.id)
         : (Number.isFinite(Number(form.category)) ? Number(form.category) : (Number.isFinite(Number(form.categoria_id)) ? Number(form.categoria_id) : 1))
 
-      const payloadForm = {
+      const result = await crearProductoConImagenes({
         nombre: String(form.name || '').trim(),
+        codigo: String(form.codigo || ''),
         descripcion: String(form.description || '').trim(),
         precio: Number(form.price),
         stock: Number(form.stock),
-        categoria_id: Number(categoriaId),
-        estado: Boolean(form.estado),
-      }
-
-      const result = await crearProductoDesdeUpload(payloadForm, imageFiles)
+        activo: Boolean(form.estado),
+        categoriaId: Number(categoriaId),
+        files: imageFiles,
+      })
       if (result) {
+        alert('Producto creado correctamente')
         setForm({ name: '', description: '', price: '', stock: '', categoria_id: '', estado: true, category: '', tags: '' })
         setSelectedCat(null)
         setImageFiles([])

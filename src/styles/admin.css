@@ -141,6 +141,16 @@ select.form-input::-ms-expand { display: none; }
 /* Desactivar overlay local; usar overlay global */
 .admin-shell::before { content: none; }
 
+/* Overlay global para el panel admin (más sobrio que el hero público) */
+.admin-theme::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85));
+}
+
 .admin-shell__aside {
   position: sticky;
   top: var(--header-height);
@@ -152,15 +162,37 @@ select.form-input::-ms-expand { display: none; }
   border-right: 1px solid rgba(184,115,51,0.35);
   backdrop-filter: saturate(120%) blur(9px);
   padding: 1rem;
+  padding-top: 1.5rem; /* más aire para logo + texto */
 }
-.admin-shell__brand { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
-.admin-shell__brand img { width: 36px; height: 36px; object-fit: contain; }
-.admin-shell__brand span { color: var(--color-light-smoke); font-weight: 600; }
+.admin-shell__brand { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-block: 0.75rem; }
+.admin-shell__brand img { width: 40px; height: 40px; object-fit: contain; }
+.admin-shell__brand span { color: var(--color-light-smoke); font-weight: 600; line-height: 1.2; }
 
 .admin-shell__nav { display: grid; gap: 0.4rem; margin-bottom: 1rem; }
-.admin-shell__nav a { display: block; padding: 0.5rem 0.75rem; border-radius: 8px; text-decoration: none; color: var(--color-light-smoke); border: 1px solid rgba(184,115,51,0.25); background: transparent; }
-.admin-shell__nav a:hover { border-color: rgba(184,115,51,0.55); background: rgba(184,115,51,0.08); color: var(--color-accent); }
-.admin-shell__nav a.is-active { border-color: var(--color-warm-copper); background: rgba(184,115,51,0.18); color: var(--color-accent); }
+.admin-shell__nav a {
+  display: block;
+  padding: 0.55rem 1.1rem; /* altura más contenida */
+  border-radius: 999px; /* forma de píldora */
+  text-decoration: none;
+  color: rgba(255,255,255,0.88);
+  border: 1px solid transparent;
+  background: rgba(0,0,0,0.35);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.admin-shell__nav a:hover {
+  background: rgba(217,178,115,0.12);
+  border: 1px solid rgba(217,178,115,0.5);
+  border-left: 3px solid rgba(217,178,115,0.6);
+  color: #f4d58a;
+}
+.admin-shell__nav a.is-active {
+  background: rgba(217,178,115,0.22);
+  border: 1px solid rgba(217,178,115,0.7);
+  border-left: 3px solid #f4d58a; /* borde izquierdo dorado para activo */
+  color: #f4d58a;
+  box-shadow: 0 0 18px rgba(217,178,115,0.25);
+}
 
 .admin-shell__aside-actions { display: grid; gap: 0.5rem; }
 
@@ -168,6 +200,11 @@ select.form-input::-ms-expand { display: none; }
 .admin-shell__header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid rgba(184,115,51,0.25); }
 .admin-shell__content { padding: 1rem; }
 .admin-shell__footer { padding: 0.75rem 1rem; border-top: 1px solid rgba(184,115,51,0.25); opacity: 0.9; }
+
+/* Tipografía y colores generales del panel admin */
+.admin-theme, .admin { color: rgba(255,255,255,0.88); font-size: 0.98rem; }
+.admin-theme h1, .admin-theme h2, .admin-theme h3, .admin h1, .admin h2, .admin h3 { color: #f4d58a; }
+.admin .admin__hint { color: rgba(255,255,255,0.72); }
 
 /* --- Panel interno (.admin) --- */
 .admin__header h2 { color: var(--color-light-smoke); text-shadow: 0 1px 2px rgba(0,0,0,.6); }
@@ -179,16 +216,85 @@ select.form-input::-ms-expand { display: none; }
 
 /* --- Dashboard centrado --- */
 .admin-dashboard { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2rem 1rem; text-align: center; }
+.admin-dashboard {
+  max-width: 1100px;
+  margin: 3rem auto; /* separación clara desde la navbar */
+  padding: 2rem 2.75rem; /* menos espacio arriba del título */
+  background: linear-gradient(180deg, #17100c 0%, #120b07 100%);
+  border-radius: 24px;
+  border: 1px solid rgba(217,178,115,0.3);
+  backdrop-filter: blur(8px);
+}
+.admin-dashboard h2 { font-size: 2.1rem; font-weight: 700; color: #f4d58a; letter-spacing: 0.02em; margin: 0 0 0.6rem; }
+.admin-dashboard p { color: rgba(255,255,255,0.78); font-size: 1rem; max-width: 720px; margin: 0.3rem auto 0; text-align: center; }
+
+/* KPIs */
+.admin-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-top: 1.25rem; }
+.kpi-card { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; background: rgba(0,0,0,0.35); border: 1px solid rgba(217,178,115,0.25); border-radius: 16px; }
+.kpi-icon { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; color: #f4d58a; filter: drop-shadow(0 0 6px rgba(217,178,115,0.25)); }
+.kpi-info { display: grid; }
+.kpi-title { color: rgba(255,255,255,0.72); font-size: 0.9rem; }
+.kpi-value { color: rgba(255,255,255,0.95); font-size: 1.35rem; font-weight: 700; }
+
+@media (max-width: 1024px) {
+  .admin-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .admin-kpis { grid-template-columns: 1fr; }
+}
 .admin-dashboard__actions { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
 .admin-dashboard__actions .btn { min-width: 160px; border: 1px solid rgba(184,115,51,0.45); }
+
+/* --- Premium dashboard tweaks (claridad y elegancia) --- */
+.admin-dashboard { padding-bottom: 1.75rem; }
+.admin-kpis { margin-top: 2.5rem; }
+.kpi-card { background: rgba(15,15,15,0.40); border-radius: 20px; box-shadow: 0 0 10px rgba(217,178,115,0.08); backdrop-filter: blur(4px); transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease; }
+.kpi-card:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 6px 20px rgba(217,178,115,0.12); }
+
+/* --- Sidebar refinado (fondo translúcido y borde dorado suave) --- */
+.admin-shell__aside { background: rgba(12,12,12,0.28); backdrop-filter: blur(8px); border-right: 1px solid rgba(217,178,115,0.20); }
+.admin-shell__brand img { filter: drop-shadow(0 0 6px rgba(217,178,115,0.4)); }
 
 
 /* --- Responsivo: colapso del sidebar --- */
 @media (max-width: 900px) {
   .admin-shell { grid-template-columns: 1fr; }
-  .admin-shell__aside { grid-row: auto; border-right: none; border-bottom: 1px solid rgba(184,115,51,0.35); }
+  .admin-shell__aside {
+    grid-row: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(184,115,51,0.35);
+    /* Evitar que el sidebar ocupe toda la altura de la pantalla en móvil */
+    position: static;
+    top: auto;
+    height: auto;
+  }
   .admin-shell__main { border-left: none; }
   .admin-shell__nav { grid-auto-flow: column; overflow-x: auto; }
+}
+
+/* Ajustes de espaciado en móvil para que el panel no “se vaya abajo” */
+@media (max-width: 768px) {
+  .admin { margin: 0.75rem auto; padding: 0.75rem; }
+  .admin__section { padding: 0.75rem; }
+  .admin__header { margin-bottom: 0.75rem; }
+  .admin__subheader { margin-bottom: 0.5rem; }
+  /* Formularios a una sola columna */
+  .admin__form { grid-template-columns: 1fr; }
+  /* Encabezado con buscador en dos filas */
+  .admin__subheader { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+  .admin__search { max-width: 100%; width: 100%; }
+  /* Las tablas se desplazan horizontalmente si exceden el viewport */
+  .admin__section { overflow-x: auto; }
+  .admin .table { min-width: 600px; }
+}
+
+/* Pantallas muy pequeñas (<= 480px): tipografía y botones más compactos */
+@media (max-width: 480px) {
+  .admin .table thead th, .admin .table tbody td { padding: 0.5rem 0.4rem; font-size: 0.92rem; }
+  .admin .btn { padding: 0.5rem 0.75rem; }
+  .admin-shell__brand img { width: 28px; height: 28px; }
+  .admin-shell__brand span { font-size: 0.95rem; }
+  .admin .badge { font-size: 0.8rem; }
 }
 
 /* Mantener toolbar existente */
@@ -219,3 +325,59 @@ select.form-input::-ms-expand { display: none; }
   color: var(--color-accent);
 }
 .admin .table.table--admin tbody tr:hover td { background: rgba(184,115,51,0.08); border-color: rgba(212,175,55,0.45); }
+
+/* ==========================
+   Usuarios (módulo): botones, badges, encabezado, toolbar y modales
+   ========================== */
+/* Botones variantes */
+.admin .btn--gold { background: #2f2f2f; border: 2px solid #E7B892; color: #fff; }
+.admin .btn--gold:hover { background: #353535; border-color: #F3CD72; }
+.admin .btn--amber { background: #5a3a00; border: 1px solid rgba(243,205,114,0.55); color: #fff; }
+.admin .btn--amber:hover { filter: brightness(1.08); box-shadow: 0 0 0 1px rgba(243,205,114,0.45), 0 6px 18px rgba(0,0,0,0.35); }
+
+/* Badges variantes */
+.admin .badge--green { background: rgba(38,139,68,0.18); color: #3ddc97; border-color: rgba(61,220,151,0.45); }
+.admin .badge--red { background: rgba(139,38,38,0.18); color: #ff7b7b; border-color: rgba(255,123,123,0.45); }
+.admin .badge--gold { background: rgba(231,184,146,0.18); color: #f4d58a; border-color: rgba(231,184,146,0.55); }
+
+/* Encabezado de usuarios */
+.admin-users__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.admin-users__titles { display: grid; gap: 0.25rem; }
+.admin-users__title { font-size: 1.75rem; font-weight: 700; color: #f4d58a; letter-spacing: 0.02em; margin: 0; }
+.admin-users__subtitle { color: rgba(255,255,255,0.82); margin: 0; }
+.breadcrumb { font-size: 0.92rem; color: rgba(255,255,255,0.75); }
+.admin-users__actions { display: flex; gap: 0.5rem; align-items: center; }
+
+/* Tarjetas de resumen */
+.admin-users__stats .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+.stat-card { display: flex; align-items: center; gap: 0.75rem; padding: 0.9rem 1rem; background: rgba(10,10,10,0.75); border: 1px solid rgba(212,175,55,0.30); border-radius: 16px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); backdrop-filter: blur(6px); }
+.stat-icon { display: inline-flex; width: 28px; height: 28px; align-items: center; justify-content: center; color: #f4d58a; filter: drop-shadow(0 0 6px rgba(217,178,115,0.25)); }
+.stat-info { display: grid; }
+.stat-value { font-size: 1.3rem; font-weight: 700; color: rgba(255,255,255,0.95); }
+.stat-label { font-size: 0.9rem; color: rgba(255,255,255,0.72); }
+@media (max-width: 1024px) { .admin-users__stats .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .admin-users__stats .stats-grid { grid-template-columns: 1fr; } }
+
+/* Toolbar */
+.admin-users__toolbar .toolbar-row { display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem; align-items: center; }
+.toolbar-search { max-width: 420px; }
+.toolbar-filters { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.chip { background: rgba(0,0,0,0.35); border: 1px solid rgba(217,178,115,0.35); color: rgba(255,255,255,0.85); border-radius: 999px; padding: 0.35rem 0.7rem; cursor: pointer; }
+.chip:hover { background: rgba(217,178,115,0.12); border-color: rgba(217,178,115,0.5); color: #f4d58a; }
+.chip.is-active { background: rgba(217,178,115,0.22); border-color: rgba(217,178,115,0.7); color: #f4d58a; box-shadow: 0 0 18px rgba(217,178,115,0.25); }
+.toolbar-sort { display: grid; gap: 0.25rem; align-items: center; color: #eee; }
+
+/* Acciones en tabla */
+.table__actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+
+/* Modal (glass) */
+.modal { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); }
+.modal__dialog { width: min(700px, 92vw); background: rgba(10,10,10,0.75); border: 1px solid rgba(212,175,55,0.30); border-radius: 16px; box-shadow: 0 18px 60px rgba(0,0,0,0.55); padding: 1rem; }
+.modal__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+.modal__body { margin-bottom: 0.75rem; }
+.modal__actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+
+@media (max-width: 768px) {
+  .admin-users__toolbar .toolbar-row { grid-template-columns: 1fr; }
+  .admin-users__actions { flex-wrap: wrap; }
+}

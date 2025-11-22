@@ -42,17 +42,10 @@ async function doFetch(base, path, { method = 'GET', params, body, headers } = {
 const xFetchAuth = (path, opts) => doFetch(AUTH_BASE, path, opts)
 const xFetchApi  = (path, opts) => doFetch(API_BASE,  path, opts)
 
-// Fallback para /auth/* en caso de base invertida
+// Autenticación a AUTH_BASE 
 async function fetchAuthPath(path, opts) {
-  try {
-    return await xFetchAuth(path, opts)
-  } catch (err) {
-    if (err?.status === 404) {
-      // Intentar en la otra base si /auth/* no existe
-      return xFetchApi(path, opts)
-    }
-    throw err
-  }
+  // Todo lo de /auth/* debe ir exclusivamente al grupo de autenticación (Jf-BHmdB)
+  return doFetch(AUTH_BASE, path, opts);
 }
 
 // Utils
@@ -194,6 +187,22 @@ export const getUsers  = (params) => xFetchApi('/usuario', { method: 'GET', para
 export const getUser   = (id) => xFetchApi(`/usuario/${id}`, { method: 'GET' })
 export const updateUser = (id, { estado, rol }) => xFetchApi(`/usuario/${id}`, { method: 'PUT', body: { estado, rol } })
 export const deleteUser = (id) => xFetchApi(`/usuario/${id}`, { method: 'DELETE' })
+
+// Crear usuario (rol fijo cliente, estado por defecto activo)
+export const createUser = async (payload) => {
+  const body = {
+    nombre: (payload?.nombre ?? payload?.name ?? '').toString().trim(),
+    email: (payload?.email ?? '').toString().trim().toLowerCase(),
+    password: (payload?.password ?? '').toString(),
+    estado: (payload?.estado ?? 'activo'),
+    rol: 'cliente',
+  }
+  return xFetchApi('/usuario', { method: 'POST', body })
+}
+
+// Helpers de bloqueo
+export const blockUser = (id) => updateUser(id, { estado: 'bloqueado', rol: undefined })
+export const unblockUser = (id) => updateUser(id, { estado: 'activo', rol: undefined })
 
 export const requestPasswordReset = async (email) => {
   try {
