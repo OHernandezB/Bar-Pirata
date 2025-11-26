@@ -18,11 +18,11 @@ export function MenuItemCard({ id, name, description, price, tags = [], images =
   const prev = () => setCurrent((i) => (i - 1 + carouselImages.length) % carouselImages.length);
   const next = () => setCurrent((i) => (i + 1) % carouselImages.length);
 
-  const handleAdd = () => {
-    const firstImg = carouselImages[current] || '/IMG/logo-bar-pirata.png';
-    const pid = id ?? name; // usar nombre si no hay id
-    if (!pid) return;
-    cart?.addItem?.({ id: pid, name: name || 'Producto', price, image: firstImg }, qty);
+  const handleAdd = async () => {
+    const pid = id ?? null;
+    if (pid == null) return;
+    await cart?.addProduct?.(pid, qty);
+    await cart?.refresh?.();
   };
   const handleImgError = (e) => {
     if (e.currentTarget.dataset.fallbackApplied === 'true') return;

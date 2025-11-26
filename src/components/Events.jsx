@@ -49,7 +49,8 @@ export function Events({ events = defaultEvents }) {
         {events.map((ev) => {
           const { variantClass, emoji } = getEventMeta(ev.title);
           const isVisible = visibleIds.has(ev.id);
-          const displayTitle = emoji && !String(ev.title).includes(emoji) ? `${emoji} ${ev.title}` : ev.title;
+          const hasEmoji = Boolean(emoji);
+          const baseTitle = hasEmoji ? String(ev.title).replace(emoji, '').trim() : ev.title;
           return (
             <li
               key={ev.id}
@@ -58,12 +59,15 @@ export function Events({ events = defaultEvents }) {
               ref={(el) => registerRef(ev.id, el)}
             >
               <div className="event__header">
-                <h3>{displayTitle}</h3>
+                <div className="event__titlegroup">
+                  {hasEmoji && <span className="event__icon" aria-hidden="true">{emoji}</span>}
+                  <h3 className="event__title">{baseTitle}</h3>
+                </div>
               </div>
               <p className="event__summary">{ev.summary}</p>
               {expandedId === ev.id && <p className="event__details">{ev.details}</p>}
               <div className="event__actions">
-                <button onClick={() => setExpandedId(expandedId === ev.id ? null : ev.id)}>
+                <button className="event__button" onClick={() => setExpandedId(expandedId === ev.id ? null : ev.id)}>
                   {expandedId === ev.id ? 'Ver menos' : 'Ver más'}
                 </button>
                 <span className="event__date">{ev.date}</span>

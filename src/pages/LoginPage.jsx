@@ -12,9 +12,10 @@ export default function LoginPage() {
   const [error, setError] = useState('')
 
   // Si ya está autenticado, redirige (especialmente útil tras refrescar)
+  // Redirección post-login: Admin → /admin, Cliente → /cliente/perfil
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(isAdmin ? '/admin' : '/', { replace: true })
+      navigate(isAdmin ? '/admin' : '/cliente/perfil', { replace: true })
     }
   }, [isAuthenticated, isAdmin, navigate])
 
