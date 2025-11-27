@@ -15,7 +15,9 @@ export function AuthProvider({ children }) {
     setUser(me || null);
     const ok = !!me;
     setIsAuthenticated(ok);
-    setIsAdmin(String(me?.rol || "").toLowerCase() === "administrador");
+    const rawRol = String(me?.rol || me?.role || "").trim().toLowerCase();
+    const isAdm = ["administrador", "admin", "administrator", "adm"].includes(rawRol);
+    setIsAdmin(isAdm);
   };
 
   // --- Carga el usuario actual desde /auth/me ---
@@ -51,8 +53,9 @@ export function AuthProvider({ children }) {
       if (!token) throw new Error("El login no devolvió token.");
 
       // Guardar y aplicar el token
-      localStorage.setItem("token", token);
+      localStorage.setItem("authToken", token); // Usar 'authToken' consistentemente
       setAuthToken(token);
+      try { localStorage.setItem('lastAccessAt', new Date().toISOString()) } catch {}
 
       // Cargar datos del usuario autenticado
       await loadUser();
@@ -66,14 +69,15 @@ export function AuthProvider({ children }) {
 
   // --- Logout ---
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("authToken"); // Usar 'authToken' consistentemente
     setAuthToken("");
+    try { localStorage.removeItem('lastAccessAt') } catch {}
     applyUser(null);
   };
 
   // --- Carga sesión si hay token guardado ---
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("authToken"); // Usar 'authToken' consistentemente
     if (token) {
       setAuthToken(token);
       loadUser();

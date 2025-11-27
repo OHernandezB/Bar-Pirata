@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Xano API Endpoints</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .endpoint { font-family: monospace; background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Endpoints Xano</h1>
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = 'https://x8ki-letl-twmt.n7.xano.io/api:SGvG01BZ';
+        const TEST_USER_ID = 15;
+        
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        async function testEndpoint(method, endpoint, body = null) {
+            const url = `${API_BASE}${endpoint}`;
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + (localStorage.getItem('authToken') || 'test-token')
+                }
+            };
+            
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+            
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json().catch(() => ({ error: 'No JSON response' }));
+                
+                return {
+                    success: response.ok,
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: data
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    status: 0,
+                    statusText: 'Network Error',
+                    data: { error: error.message }
+                };
+            }
+        }
+        
+        async function runTests() {
+            addResult('<h3>🚀 Iniciando pruebas de endpoints...</h3>', 'info');
+            
+            // Test 1: GET /usuario
+            addResult('<strong>Test 1: GET /usuario</strong>', 'info');
+            const result1 = await testEndpoint('GET', '/usuario');
+            if (result1.success) {
+                addResult(`✅ <span class="endpoint">GET /usuario</span> → ${result1.status} ${result1.statusText}`, 'success');
+                if (Array.isArray(result1.data)) {
+                    addResult(`📊 Se encontraron ${result1.data.length} usuarios`, 'success');
+                }
+            } else {
+                addResult(`❌ <span class="endpoint">GET /usuario</span> → ${result1.status} ${result1.statusText}`, 'error');
+                addResult(`Error: ${JSON.stringify(result1.data)}`, 'error');
+            }
+            
+            // Test 2: GET /usuario/{id}
+            addResult('<br><strong>Test 2: GET /usuario/{id}</strong>', 'info');
+            const result2 = await testEndpoint('GET', `/usuario/${TEST_USER_ID}`);
+            if (result2.success) {
+                addResult(`✅ <span class="endpoint">GET /usuario/${TEST_USER_ID}</span> → ${result2.status} ${result2.statusText}`, 'success');
+                if (result2.data.name) {
+                    addResult(`👤 Usuario: ${result2.data.name} ${result2.data.last_name || ''}`, 'success');
+                }
+            } else {
+                addResult(`❌ <span class="endpoint">GET /usuario/${TEST_USER_ID}</span> → ${result2.status} ${result2.statusText}`, 'error');
+                addResult(`Error: ${JSON.stringify(result2.data)}`, 'error');
+            }
+            
+            // Test 3: PATCH /usuario/{id} - Solo estado
+            addResult('<br><strong>Test 3: PATCH /usuario/{id} - Solo estado</strong>', 'info');
+            const result3 = await testEndpoint('PATCH', `/usuario/${TEST_USER_ID}`, { estado: 'bloqueado' });
+            if (result3.success) {
+                addResult(`✅ <span class="endpoint">PATCH /usuario/${TEST_USER_ID}</span> → ${result3.status} ${result3.statusText}`, 'success');
+                addResult(`🔄 Estado actualizado a: bloqueado`, 'success');
+            } else {
+                addResult(`❌ <span class="endpoint">PATCH /usuario/${TEST_USER_ID}</span> → ${result3.status} ${result3.statusText}`, 'error');
+                addResult(`Error: ${JSON.stringify(result3.data)}`, 'error');
+            }
+            
+            // Test 4: PATCH /usuario/{id} - Datos completos
+            addResult('<br><strong>Test 4: PATCH /usuario/{id} - Datos completos</strong>', 'info');
+            const fullData = {
+                name: "Claudia",
+                last_name: "Berrios",
+                email: "ejemplo@correo.cl",
+                direccion: "Maipu 586",
+                telefono: "564558697",
+                rol: "cliente",
+                estado: "activo"
+            };
+            const result4 = await testEndpoint('PATCH', `/usuario/${TEST_USER_ID}`, fullData);
+            if (result4.success) {
+                addResult(`✅ <span class="endpoint">PATCH /usuario/${TEST_USER_ID}</span> → ${result4.status} ${result4.statusText}`, 'success');
+                addResult(`✏️ Usuario actualizado con datos completos`, 'success');
+            } else {
+                addResult(`❌ <span class="endpoint">PATCH /usuario/${TEST_USER_ID}</span> → ${result4.status} ${result4.statusText}`, 'error');
+                addResult(`Error: ${JSON.stringify(result4.data)}`, 'error');
+            }
+            
+            // Test 5: Verificar admin endpoints (deben fallar)
+            addResult('<br><strong>Test 5: PATCH /admin/usuarios/{id} (debe fallar)</strong>', 'info');
+            const result5 = await testEndpoint('PATCH', `/admin/usuarios/${TEST_USER_ID}`, { estado: 'activo' });
+            if (result5.status === 404) {
+                addResult(`✅ <span class="endpoint">PATCH /admin/usuarios/${TEST_USER_ID}</span> → ${result5.status} Not Found (ESPERADO)`, 'success');
+                addResult(`✅ El endpoint admin no existe, como se esperaba`, 'success');
+            } else {
+                addResult(`⚠️ <span class="endpoint">PATCH /admin/usuarios/${TEST_USER_ID}</span> → ${result5.status} ${result5.statusText}`, 'error');
+            }
+            
+            // Resumen
+            addResult('<br><h3>📋 Resumen de Pruebas</h3>', 'info');
+            const tests = [result1, result2, result3, result4];
+            const passed = tests.filter(r => r.success).length;
+            const total = tests.length;
+            
+            if (passed === total) {
+                addResult(`🎉 ¡Todas las pruebas pasaron! (${passed}/${total})`, 'success');
+                addResult(`✅ El sistema está configurado correctamente para usar endpoints estándar /usuario/{id}`, 'success');
+            } else {
+                addResult(`⚠️ Algunas pruebas fallaron: ${passed}/${total} pasaron`, 'error');
+                addResult(`🔧 Revisa la configuración de Xano para los endpoints estándar`, 'error');
+            }
+            
+            addResult('<br><strong>🎯 Próximos pasos:</strong>', 'info');
+            addResult('1. Si los tests 1-4 pasaron: ¡Todo está listo!', 'info');
+            addResult('2. Si el test 3 o 4 fallaron con 500: Revisa el Function Stack en Xano', 'info');
+            addResult('3. Si el test 5 pasó con 404: ¡Perfecto! No usamos endpoints admin', 'info');
+        }
+        
+        // Auto-ejecutar las pruebas
+        runTests();
+    </script>
+</body>
+</html>

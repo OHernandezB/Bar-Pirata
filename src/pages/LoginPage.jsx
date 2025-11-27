@@ -14,7 +14,7 @@ export default function LoginPage() {
   // Si ya está autenticado, redirige (especialmente útil tras refrescar)
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(isAdmin ? '/admin' : '/', { replace: true })
+      navigate(isAdmin ? '/admin' : '/cliente/catalogo', { replace: true })
     }
   }, [isAuthenticated, isAdmin, navigate])
 

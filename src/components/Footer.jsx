@@ -1,89 +1,67 @@
-import { OpeningHours } from './OpeningHours.jsx';
+import { useState } from 'react'
+import { OpeningHours } from './OpeningHours.jsx'
+import { Instagram, Facebook, Tiktok } from 'react-bootstrap-icons'
 
-function IconFacebook(props) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      width="20"
-      height="20"
-      aria-hidden="true"
-      focusable="false"
-      {...props}
-    >
-      <path
-        fill="currentColor"
-        d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"
-      />
-    </svg>
-  );
-}
+export function Footer({ brand = 'Bar Pirata', year = new Date().getFullYear() }) {
+  const [mapOpen, setMapOpen] = useState(false)
 
-function IconInstagram(props) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      width="20"
-      height="20"
-      aria-hidden="true"
-      focusable="false"
-      {...props}
-    >
-      <path
-        fill="currentColor"
-        d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0  0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0  0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"
-      />
-    </svg>
-  );
-}
+  const address = 'Carlos Antúnez 2857-2877, Providencia, Región Metropolitana'
+  const addressUrl = 'https://maps.app.goo.gl/TQEDAnuoEp4NgUGJ6'
+  const phone = '+569 8325 0599'
+  const phone2 = '+569 8783 7306'
+  const email = 'om.hernandez@duocuc.cl'
+  const email2 = 'pa.albanese@duocuc.cl'
+  const mapEmbedUrl = 'https://www.openstreetmap.org/export/embed.html?bbox=-70.598167,-33.427023,-70.590167,-33.421023&layer=mapnik&marker=-33.424023,-70.594167'
 
-function IconTiktok(props) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      width="20"
-      height="20"
-      aria-hidden="true"
-      focusable="false"
-      {...props}
-    >
-      <path
-        fill="currentColor"
-        d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"
-      />
-    </svg>
-  );
-}
-
-export function Footer({ brand = 'Bar Pirata', year = new Date().getFullYear(), social = defaultSocial }) {
   return (
     <footer className="footer">
       <div className="footer__inner">
-        <div className="footer__brandline">
-          <div className="footer__brand">{brand} © {year}</div>
-          <div className="footer__social">
-            {social.map(({ label, href }) => {
-              const Icon = label === 'Facebook' ? IconFacebook : label === 'Instagram' ? IconInstagram : label === 'TikTok' ? IconTiktok : null;
-              return (
-                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} title={label} style={{ display: 'inline-flex', alignItems: 'center' }}>
-                  {Icon ? <Icon /> : label}
-                </a>
-              );
-            })}
+        {/* Información de contacto */}
+        <section className="footer__contact" aria-label="Información de contacto">
+          <h3 style={{ color: 'var(--color-accent)', margin: 0, marginBottom: '0.5rem', fontSize: '1.05rem' }}>Contacto</h3>
+          <div style={{ display: 'grid', gap: '0.35rem' }}>
+            <div><strong>Dirección:</strong> {address} {' '}<a href={addressUrl} target="_blank" rel="noreferrer">Ver en Google Maps</a></div>
+            <div><strong>Tel:</strong> <a href={`tel:${String(phone).replace(/\s+/g, '')}`}>{phone}</a> {' '}|{' '} <a href={`tel:${String(phone2).replace(/\s+/g, '')}`}>{phone2}</a></div>
+            <div><strong>Email:</strong> <a href={`mailto:${email}`}>{email}</a> {' '}|{' '} <a href={`mailto:${email2}`}>{email2}</a></div>
+            <div className="footer__social" aria-label="Redes sociales">
+              <a href="#" title="Instagram" aria-label="Instagram"><Instagram /></a>
+              <a href="#" title="Facebook" aria-label="Facebook"><Facebook /></a>
+              <a href="#" title="TikTok" aria-label="TikTok"><Tiktok /></a>
+            </div>
           </div>
-        </div>
+        </section>
+
+        {/* Horarios compactos */}
         <div className="footer__hours">
           <OpeningHours compact />
         </div>
-      </div>
-    </footer>
-  );
-}
 
-const defaultSocial = [
-  { label: 'Instagram', href: '#' },
-  { label: 'Facebook', href: '#' },
-  { label: 'TikTok', href: '#' },
-];
+        {/* Mini mapa */}
+        <section className="footer__map" aria-label="Mapa">
+          <h3 style={{ color: 'var(--color-accent)', margin: 0, marginBottom: '0.5rem', fontSize: '1.05rem' }}>Ubicación</h3>
+          <div className="footer__map-thumb" role="button" tabIndex={0} aria-label="Abrir mapa" onClick={() => setMapOpen(true)} onKeyDown={(e) => { if (e.key === 'Enter') setMapOpen(true) }}>
+            <iframe title="Mapa mini" src={mapEmbedUrl} style={{ border: 0 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </section>
+      </div>
+
+      {/* Franja inferior */}
+      <div className="footer__bottom">{brand} © 2025</div>
+
+      {/* Modal de mapa */}
+      {mapOpen && (
+        <div className="modal-overlay" role="dialog" aria-modal="true" aria-label="Mapa grande">
+          <div className="modal-content">
+            <button className="modal-close" onClick={() => setMapOpen(false)} aria-label="Cerrar">×</button>
+            <div className="modal-body">
+              <iframe title="Mapa grande" src={mapEmbedUrl} style={{ border: 0 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            <div className="modal-actions">
+              <a className="navbar__login" href={addressUrl} target="_blank" rel="noreferrer">Ver en Google Maps</a>
+            </div>
+          </div>
+        </div>
+      )}
+    </footer>
+  )
+}

@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import '../styles/admin.css'
-import { useAuth } from '../context/AuthContext.jsx'
-import { getCategories, createCategory, updateCategory, deleteCategory } from '../api/xano.js'
+import '../../styles/admin.css'
+import { useAuth } from '../../context/AuthContext.jsx'
+import { getCategories, createCategory, updateCategory, deleteCategory } from '../../api/xano.js'
 
 export default function AdminCategoriesPage() {
-  const { isAuthenticated, isAdmin, logout, user } = useAuth()
-  const navigate = useNavigate()
+  const { isAuthenticated, isAdmin, user } = useAuth()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')

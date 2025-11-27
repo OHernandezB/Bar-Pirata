@@ -1,0 +1,15 @@
+{
+  "eslint.workingDirectories": ["."],
+  "eslint.validate": ["javascript", "javascriptreact"],
+  "typescript.validate": false,
+  "javascript.validate": false,
+  "css.validate": false,
+  "html.validate": false,
+  "json.validate": false,
+  "eslint.enable": false,
+  "typescript.suggest.autoImports": false,
+  "javascript.suggest.autoImports": false,
+  "editor.semanticHighlighting.enabled": false,
+  "typescript.semanticHighlighting.enabled": false,
+  "javascript.semanticHighlighting.enabled": false
+}

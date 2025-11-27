@@ -1,6 +1,7 @@
 // Cliente Xano con dos baseURL: AUTH y API
-export const AUTH_BASE = (import.meta.env.VITE_XANO_AUTH_BASE_URL || 'https://x8ki-letl-twmt.n7.xano.io/api:SGvG01BZ').replace(/\/$/, '')
-export const API_BASE  = (import.meta.env.VITE_XANO_API_BASE_URL  || 'https://x8ki-letl-twmt.n7.xano.io/api:Jf-BHmdB').replace(/\/$/, '')
+// Defaults alineados con .env.example: AUTH -> Jf-BHmdB, API -> SGvG01BZ
+export const AUTH_BASE = (import.meta.env.VITE_XANO_AUTH_BASE_URL || 'https://x8ki-letl-twmt.n7.xano.io/api:Jf-BHmdB').replace(/\/$/, '')
+export const API_BASE  = (import.meta.env.VITE_XANO_API_BASE_URL  || 'https://x8ki-letl-twmt.n7.xano.io/api:SGvG01BZ').replace(/\/$/, '')
 export const API_ORIGIN = (() => { try { return new URL(API_BASE).origin } catch { const m = API_BASE.match(/^https?:\/\/[^/]+/i); return m ? m[0] : '' } })()
 
 // Paths configurables (permiten seguir rutas exactas del backend)
@@ -8,12 +9,27 @@ const PASSWORD_CHANGE_PATH = (import.meta.env.VITE_XANO_PASSWORD_CHANGE_PATH || 
 const CHECK_EMAIL_PATH     = (import.meta.env.VITE_XANO_CHECK_EMAIL_PATH     || '/auth/check_email')
 
 export let AUTH_TOKEN = ''
-export function setAuthToken(token) { AUTH_TOKEN = token || ''; if (token) { try { localStorage.setItem('token', token); localStorage.setItem('auth_token', token); } catch {} } else { try { localStorage.removeItem('token'); localStorage.removeItem('auth_token'); } catch {} } }
+export function setAuthToken(token) { 
+  AUTH_TOKEN = token || ''; 
+  if (token) { 
+    try { 
+      localStorage.setItem('authToken', token); // Usar 'authToken' consistentemente
+    } catch {} 
+  } else { 
+    try { 
+      localStorage.removeItem('authToken'); 
+    } catch {} 
+  } 
+}
 
 function buildHeaders(extra = {}, forceAuth = false) {
   const headers = { Accept: 'application/json', ...extra }
   if (forceAuth || !headers.Authorization) {
-    if (AUTH_TOKEN) headers.Authorization = `Bearer ${AUTH_TOKEN}`
+    // Asegurar que el token esté actualizado desde localStorage
+    const token = localStorage.getItem('authToken') || AUTH_TOKEN;
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
   }
   return headers
 }
@@ -70,6 +86,7 @@ function ensureImageUrl(val) {
   const full = `${API_ORIGIN}${url.startsWith('/') ? url : `/${url}`}`
   return typeof val === 'string' ? full : { ...val, url: full }
 }
+
 const isNumericId = (v) => (typeof v === 'number') || (typeof v === 'string' && /^\d+$/.test(v))
 function appendCacheBust(url, v) {
   if (!url || !v) return url
@@ -115,11 +132,37 @@ async function normalizeProduct(p) {
 export const signup = (payload) => fetchAuthPath('/auth/signup', { method: 'POST', body: payload })
 export const login  = ({ email, password }) => fetchAuthPath('/auth/login', { method: 'POST', body: { email, password } })
 export const getMe = async () => {
-  const data = await fetchAuthPath('/auth/me', {
-    method: 'GET',
-    headers: buildHeaders({}, true)
-  });
-  return data?.Self ?? data;
+  // Leer el token directamente de localStorage para asegurar consistencia
+  const token = localStorage.getItem('authToken');
+  
+  if (!token) {
+    throw new Error('No hay token de autenticación disponible');
+  }
+  
+  // Asegurar que el token global esté sincronizado
+  AUTH_TOKEN = token;
+  
+  try {
+    const data = await fetchAuthPath('/auth/me', {
+      method: 'GET',
+      headers: buildHeaders({}, true)
+    });
+    
+    // Manejar diferentes formatos de respuesta que Xano puede devolver
+    const userData = data?.Self || data?.user || data?.User || data?.data || data;
+    
+    // Validar que tengamos datos de usuario válidos
+    if (!userData || typeof userData !== 'object') {
+      console.error('Formato de respuesta inesperado de /auth/me:', data);
+      throw new Error('Respuesta inválida de /auth/me');
+    }
+    
+    console.log('✅ /auth/me respuesta exitosa');
+    return userData;
+  } catch (error) {
+    console.error('❌ Error en getMe:', error);
+    throw error;
+  }
 };
 
 // Catálogo (API BASE)
@@ -183,26 +226,61 @@ export const updateCategory = (id, payload) => xFetchApi(`/categoria_producto/${
 export const deleteCategory = (id) => xFetchApi(`/categoria_producto/${id}`, { method: 'DELETE' })
 
 // Usuarios (API BASE) — solo si existe
-export const getUsers  = (params) => xFetchApi('/usuario', { method: 'GET', params })
-export const getUser   = (id) => xFetchApi(`/usuario/${id}`, { method: 'GET' })
-export const updateUser = (id, { estado, rol }) => xFetchApi(`/usuario/${id}`, { method: 'PUT', body: { estado, rol } })
-export const deleteUser = (id) => xFetchApi(`/usuario/${id}`, { method: 'DELETE' })
+export const getUsers  = (params) => xFetchApi('/usuario', { method: 'GET', params, headers: buildHeaders({}, true) })
+export const getUser   = (id) => xFetchApi(`/usuario/${id}`, { method: 'GET', headers: buildHeaders({}, true) })
+// Permite actualizar cualquier campo del usuario (nombre, email, estado, rol, etc.)
+export const updateUser = (id, payload) => xFetchApi(`/usuario/${id}`, { method: 'PATCH', body: payload, headers: buildHeaders({}, true) })
+export const deleteUser = (id) => xFetchApi(`/usuario/${id}`, { method: 'DELETE', headers: buildHeaders({}, true) })
 
 // Crear usuario (rol fijo cliente, estado por defecto activo)
 export const createUser = async (payload) => {
+  const body = {
+    name: (payload?.name ?? '').toString().trim(),
+    last_name: (payload?.last_name ?? '').toString().trim(),
+    password: (payload?.password ?? '').toString(),
+    direccion: (payload?.direccion ?? '').toString().trim(),
+    telefono: (payload?.telefono ?? '').toString().trim(),
+    estado: (payload?.estado ?? 'activo'),
+    // rol no modificable desde la app: lo omito o el backend fija por defecto
+  }
+  return xFetchApi('/usuario', { method: 'POST', body, headers: buildHeaders({}, true) })
+}
+
+// Helpers de bloqueo - DEPRECATED: Usar updateUser directamente con datos completos
+export const blockUser = (id) => updateUser(id, { estado: 'bloqueado' })
+export const unblockUser = (id) => updateUser(id, { estado: 'activo' })
+
+// Administración de Usuarios (API BASE) — rutas /admin/usuarios con JWT
+export const adminListUsers = (params) => xFetchApi('/admin/usuarios', {
+  method: 'GET',
+  params,
+  headers: buildHeaders({}, true)
+})
+
+export const adminCreateUser = (payload) => {
   const body = {
     nombre: (payload?.nombre ?? payload?.name ?? '').toString().trim(),
     email: (payload?.email ?? '').toString().trim().toLowerCase(),
     password: (payload?.password ?? '').toString(),
     estado: (payload?.estado ?? 'activo'),
-    rol: 'cliente',
+    rol: (payload?.rol ?? 'cliente'),
   }
-  return xFetchApi('/usuario', { method: 'POST', body })
+  return xFetchApi('/admin/usuarios', { method: 'POST', body, headers: buildHeaders({}, true) })
 }
 
-// Helpers de bloqueo
-export const blockUser = (id) => updateUser(id, { estado: 'bloqueado', rol: undefined })
-export const unblockUser = (id) => updateUser(id, { estado: 'activo', rol: undefined })
+export const adminUpdateUser = (id, payload) => {
+  const body = {}
+  if (typeof payload?.nombre !== 'undefined') body.nombre = payload.nombre
+  if (typeof payload?.email !== 'undefined') body.email = String(payload.email || '').trim().toLowerCase()
+  if (typeof payload?.rol !== 'undefined') body.rol = payload.rol
+  if (typeof payload?.estado !== 'undefined') body.estado = payload.estado
+  return xFetchApi(`/admin/usuarios/${id}`, { method: 'PATCH', body, headers: buildHeaders({}, true) })
+}
+
+export const adminDeleteUser = (id) => xFetchApi(`/admin/usuarios/${id}`, { method: 'DELETE', headers: buildHeaders({}, true) })
+
+export const adminBlockUser = (id) => adminUpdateUser(id, { estado: 'bloqueado' })
+export const adminUnblockUser = (id) => adminUpdateUser(id, { estado: 'activo' })
 
 export const requestPasswordReset = async (email) => {
   try {
@@ -271,4 +349,56 @@ export const changePassword = async (email, password) => {
   } catch (err) {
     throw new Error('No se pudo actualizar la contraseña en el servidor. Configura un endpoint /auth para cambio de contraseña o habilita permisos de actualización en /usuario.')
   }
+}
+
+// Ordenes (API BASE) - para el cliente
+export const createOrder = async (orderData) => {
+  try {
+    const body = {
+      items: orderData.items || [],
+      total: orderData.total || 0,
+      cliente_nombre: orderData.nombre || '',
+      cliente_email: orderData.email || '',
+      cliente_telefono: orderData.telefono || '',
+      cliente_direccion: orderData.direccion || '',
+      notas: orderData.notas || '',
+      estado: 'pendiente'
+    }
+    return xFetchApi('/orden', { method: 'POST', body, headers: buildHeaders({}, true) })
+  } catch (error) {
+    console.error('Error en createOrder:', error)
+    throw error
+  }
+}
+
+// Confirmar pedido (cierra carrito y crea ORDEN + ORDEN_ITEM)
+export const confirmPedido = async () => {
+  return xFetchApi('/confirmar_pedido', { method: 'POST', headers: buildHeaders({}, true), body: {} })
+}
+
+// Listar órdenes
+export const getOrdenes = async (params) => {
+  const data = await xFetchApi('/orden', { method: 'GET', params, headers: buildHeaders({}, true) })
+  const arr = Array.isArray(data) ? data : (data?.items || [])
+  return arr
+}
+
+// Actualizar estado de una orden
+export const updateOrden = async (id, payload) => {
+  return xFetchApi(`/orden/${id}`, { method: 'PATCH', body: payload, headers: buildHeaders({}, true) })
+}
+
+// Carrito (API BASE)
+export const getCarritoActual = async () => {
+  const data = await xFetchApi('/carrito/actual', { method: 'GET', headers: buildHeaders({}, true) })
+  return data
+}
+export const agregarItemCarrito = async ({ producto_id, cantidad }) => {
+  return xFetchApi('/carrito/agregar_item', { method: 'POST', body: { producto_id, cantidad }, headers: buildHeaders({}, true) })
+}
+export const actualizarItemCarrito = async (itemId, payload) => {
+  return xFetchApi(`/carrito/item/${itemId}`, { method: 'PATCH', body: payload, headers: buildHeaders({}, true) })
+}
+export const eliminarItemCarrito = async (itemId) => {
+  return xFetchApi(`/carrito/item/${itemId}`, { method: 'DELETE', headers: buildHeaders({}, true) })
 }

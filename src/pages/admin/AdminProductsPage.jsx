@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import '../styles/admin.css'
-import { useAuth } from '../context/AuthContext.jsx'
-import { getProducts, deleteProduct, getCategories } from '../api/xano.js'
-import ImageCarousel from '../components/ImageCarousel.jsx'
+import '../../styles/admin.css'
+import { useAuth } from '../../context/AuthContext.jsx'
+import { getProducts, deleteProduct, getCategories } from '../../api/xano.js'
+import ImageCarousel from '../../components/ImageCarousel.jsx'
 
 // --- Subida y flujo de creación: constantes de API locales (evitan conflictos de import) ---
 const API_ORIGIN = 'https://x8ki-letl-twmt.n7.xano.io'

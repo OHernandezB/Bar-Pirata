@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Xano Integration</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { margin: 5px; padding: 8px 15px; cursor: pointer; }
+        .log { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 3px; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Integración Xano</h1>
+    
+    <div class="test-section info">
+        <h3>📋 Información de Configuración</h3>
+        <p><strong>Auth Base URL:</strong> <span id="auth-base"></span></p>
+        <p><strong>API Base URL:</strong> <span id="api-base"></span></p>
+        <p><strong>Token Status:</strong> <span id="token-status"></span></p>
+    </div>
+
+    <div class="test-section">
+        <h3>🔐 Autenticación</h3>
+        <button onclick="testAuthMe()">Test /auth/me</button>
+        <button onclick="checkToken()">Verificar Token</button>
+        <button onclick="clearToken()">Limpiar Token</button>
+    </div>
+
+    <div class="test-section">
+        <h3>👥 Gestión de Usuarios</h3>
+        <button onclick="testGetUsers()">Test GET /usuario</button>
+        <button onclick="testGetUser()">Test GET /usuario/:id</button>
+        <button onclick="testCreateUser()">Test POST /usuario</button>
+    </div>
+
+    <div class="test-section">
+        <h3>📊 Resultados</h3>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Configuración de Xano
+        const AUTH_BASE = 'https://x8ki-letl-twmt.n7.xano.io/api:Jf-BHmdB';
+        const API_BASE = 'https://x8ki-letl-twmt.n7.xano.io/api:SGvG01BZ';
+
+        // Mostrar configuración inicial
+        document.getElementById('auth-base').textContent = AUTH_BASE;
+        document.getElementById('api-base').textContent = API_BASE;
+        updateTokenStatus();
+
+        function updateTokenStatus() {
+            const token = localStorage.getItem('authToken');
+            document.getElementById('token-status').innerHTML = token ? 
+                `<span style="color: green;">✅ Token presente: ${token.substring(0, 20)}...</span>` : 
+                `<span style="color: red;">❌ No hay token</span>`;
+        }
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log';
+            logEntry.style.borderLeft = type === 'success' ? '4px solid #28a745' : 
+                                      type === 'error' ? '4px solid #dc3545' : '4px solid #17a2b8';
+            logEntry.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            results.insertBefore(logEntry, results.firstChild);
+        }
+
+        function buildHeaders() {
+            const token = localStorage.getItem('authToken');
+            return {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            };
+        }
+
+        async function testAuthMe() {
+            log('Probando /auth/me...', 'info');
+            try {
+                const response = await fetch(`${AUTH_BASE}/auth/me`, {
+                    method: 'GET',
+                    headers: buildHeaders()
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ /auth/me exitoso: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    log(`❌ Error ${response.status}: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        function checkToken() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                log(`✅ Token encontrado: ${token.substring(0, 50)}...`, 'success');
+            } else {
+                log('❌ No hay token en localStorage', 'error');
+            }
+            updateTokenStatus();
+        }
+
+        function clearToken() {
+            localStorage.removeItem('authToken');
+            log('🗑️ Token eliminado', 'info');
+            updateTokenStatus();
+        }
+
+        async function testGetUsers() {
+            log('Probando GET /usuario...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/usuario`, {
+                    method: 'GET',
+                    headers: buildHeaders()
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const users = Array.isArray(data) ? data : data.items || [];
+                    log(`✅ GET /usuario exitoso: ${users.length} usuarios encontrados`, 'success');
+                    log(`Primer usuario: ${JSON.stringify(users[0] || {}, null, 2)}`, 'info');
+                } else {
+                    log(`❌ Error ${response.status}: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testGetUser() {
+            log('Probando GET /usuario/:id...', 'info');
+            try {
+                // Primero obtener un usuario para testear
+                const usersResponse = await fetch(`${API_BASE}/usuario`, {
+                    method: 'GET',
+                    headers: buildHeaders()
+                });
+                
+                if (!usersResponse.ok) {
+                    log('❌ No se pudieron obtener usuarios para test', 'error');
+                    return;
+                }
+                
+                const usersData = await usersResponse.json();
+                const users = Array.isArray(usersData) ? usersData : usersData.items || [];
+                
+                if (users.length === 0) {
+                    log('❌ No hay usuarios para testear', 'error');
+                    return;
+                }
+                
+                const userId = users[0].id;
+                log(`Testeando con usuario ID: ${userId}`, 'info');
+                
+                const response = await fetch(`${API_BASE}/usuario/${userId}`, {
+                    method: 'GET',
+                    headers: buildHeaders()
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ GET /usuario/${userId} exitoso`, 'success');
+                    log(`Usuario: ${JSON.stringify(data, null, 2)}`, 'info');
+                } else {
+                    log(`❌ Error ${response.status}: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCreateUser() {
+            log('Probando POST /usuario...', 'info');
+            try {
+                const newUser = {
+                    name: 'Test User',
+                    last_name: 'Xano',
+                    email: `test${Date.now()}@example.com`,
+                    password: 'test123456',
+                    direccion: 'Test Address 123',
+                    telefono: '1234567890',
+                    estado: 'activo',
+                    rol: 'cliente'
+                };
+                
+                const response = await fetch(`${API_BASE}/usuario`, {
+                    method: 'POST',
+                    headers: buildHeaders(),
+                    body: JSON.stringify(newUser)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ POST /usuario exitoso: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    log(`❌ Error ${response.status}: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
