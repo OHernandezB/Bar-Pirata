@@ -16,7 +16,10 @@ const ClientCatalogPage = () => {
   const addMapped = async (p) => {
     const pid = p.id ?? null
     if (pid == null) return
-    await addProduct(pid, 1)
+    const ok = await addProduct(pid, 1)
+    if (!ok) {
+      console.warn('No se pudo agregar el producto al carrito (Xano)')
+    }
     await refresh()
   }
 

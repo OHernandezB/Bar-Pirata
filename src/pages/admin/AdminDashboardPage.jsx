@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import { getOrdenes, updateOrden } from '../../api/xano.js'
 
 export default function AdminDashboardPage() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const [lastAccess, setLastAccess] = useState('')
   const [orders, setOrders] = useState([])
@@ -67,6 +67,7 @@ export default function AdminDashboardPage() {
     <main className="admin">
       <section className="admin-dashboard">
         <h2>Panel de Administración</h2>
+        <p className="admin__welcome">Bienvenido, <strong>{(user?.name || user?.nombre || 'Administrador')}</strong>{user?.rol === 'administrador' ? ' (Administrador)' : ''}</p>
 
         {/* Tarjetas de KPIs */}
         <div className="admin-kpis" role="list">

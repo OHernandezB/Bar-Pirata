@@ -130,7 +130,8 @@ const ClientProfilePage = () => {
       <ClientNavbar />
       <div className="client-profile-hero">
         <Container>
-          <h1 className="text-center mb-4 text-warning">Mi Perfil</h1>
+          <h1 className="text-center mb-2 text-warning">Mi Perfil</h1>
+          <p className="text-center text-light mb-3">Bienvenido nuevamente, <strong>{authUser?.name || authUser?.nombre || user?.name || user?.nombre || 'Cliente'}</strong></p>
           <p className="text-center text-light">
             Gestiona tu información personal
           </p>

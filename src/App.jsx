@@ -65,7 +65,7 @@ function App() {
             path="/login"
             element={
               isAuthenticated
-                ? <Navigate to={isAdmin ? '/admin' : (postLoginRedirect || '/cliente/catalogo')} replace />
+                ? <Navigate to={isAdmin ? '/admin' : (postLoginRedirect || '/cliente/perfil')} replace />
                 : <LoginPage />
             }
           />

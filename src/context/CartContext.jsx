@@ -1,4 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+// Endpoints Xano usados por el carrito:
+// API_BASE + GET  '/carrito/actual' (fallbacks: '/carrito', '/cart/current')
+// API_BASE + POST '/carrito/agregar_item' (fallbacks: '/carrito/item', '/cart/add_item') — body: { producto_id, cantidad } o { id_producto, cantidad }
+// API_BASE + PATCH/DELETE '/carrito/item/{id}' (fallback: '/item_carrito/{id}')
 import { getCarritoActual, agregarItemCarrito, actualizarItemCarrito, eliminarItemCarrito, getProduct } from '../api/xano.js'
 import { resolveImageUrl } from '../utils/images.js'
 import { useAuth } from './AuthContext.jsx'
@@ -39,21 +43,40 @@ export function CartProvider({ children }) {
       const rawItems = Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : [])
       const mapped = await Promise.all(rawItems.map(mapServerItem))
       setItems(mapped)
+    } catch (err) {
+      console.warn('No se pudo cargar el carrito desde Xano:', err)
     } finally {
       setLoading(false)
     }
   }
 
   const addProduct = async (productoId, qty = 1) => {
-    if (!isAuthenticated) return false
-    await agregarItemCarrito({ producto_id: productoId, cantidad: qty })
-    await refresh()
-    return true
+    if (!isAuthenticated) {
+      console.warn('Debes iniciar sesión para agregar productos al carrito')
+      return false
+    }
+    try {
+      await agregarItemCarrito({ producto_id: productoId, cantidad: qty })
+      await refresh()
+      return true
+    } catch (err) {
+      console.error('No se pudo agregar el producto al carrito. Intenta nuevamente.', err)
+      return false
+    }
   }
 
-  const removeItem = async (id) => { await eliminarItemCarrito(id); await refresh() }
-  const updateQty = async (id, qty) => { await actualizarItemCarrito(id, { cantidad: qty }); await refresh() }
-  const clearCart = async () => { for (const it of items) { try { await eliminarItemCarrito(it.id) } catch {} } await refresh() }
+  const removeItem = async (id) => {
+    try { await eliminarItemCarrito(id) } catch (err) { console.error('No se pudo eliminar el producto del carrito', err) }
+    await refresh()
+  }
+  const updateQty = async (id, qty) => {
+    try { await actualizarItemCarrito(id, { cantidad: qty }) } catch (err) { console.error('No se pudo actualizar la cantidad', err) }
+    await refresh()
+  }
+  const clearCart = async () => {
+    for (const it of items) { try { await eliminarItemCarrito(it.id) } catch (err) { console.warn('Fallo eliminando item', it?.id, err) } }
+    await refresh()
+  }
 
   const total = useMemo(() => items.reduce((sum, i) => sum + (Number(i.precio) || 0) * (Number(i.qty) || Number(i.quantity) || 0), 0), [items]);
 

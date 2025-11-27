@@ -389,16 +389,77 @@ export const updateOrden = async (id, payload) => {
 }
 
 // Carrito (API BASE)
+// Nota: Estos helpers prueban múltiples rutas candidatas para alinearse con Xano real
+// Base de API: API_BASE (p.ej. https://.../api:SGvG01BZ)
+// Endpoints candidatos documentados:
+//   GET  /carrito/actual            → carrito abierto del usuario
+//   GET  /carrito                   → carrito actual (algunos proyectos)
+//   GET  /cart/current              → alias en inglés
+//   POST /carrito/agregar_item      → agregar o actualizar item
+//   POST /carrito/item              → crear item
+//   POST /cart/add_item             → alias en inglés
+//   PATCH/DELETE /carrito/item/{id} → actualizar/eliminar item
+//   PATCH/DELETE /item_carrito/{id} → alternativa
 export const getCarritoActual = async () => {
-  const data = await xFetchApi('/carrito/actual', { method: 'GET', headers: buildHeaders({}, true) })
-  return data
+  const candidates = ['/carrito/actual', '/carrito', '/cart/current']
+  for (const path of candidates) {
+    try {
+      const data = await xFetchApi(path, { method: 'GET', headers: buildHeaders({}, true) })
+      return data
+    } catch (err) {
+      if (err?.status && err.status !== 404 && err.status !== 400) throw err
+    }
+  }
+  const e = new Error('No se pudo obtener el carrito actual (verifica rutas en Xano)')
+  e.code = 'CART_FETCH_FAILED'
+  throw e
 }
+
 export const agregarItemCarrito = async ({ producto_id, cantidad }) => {
-  return xFetchApi('/carrito/agregar_item', { method: 'POST', body: { producto_id, cantidad }, headers: buildHeaders({}, true) })
+  const bodyVariants = [
+    { producto_id, cantidad },
+    { id_producto: producto_id, cantidad },
+  ]
+  const candidates = ['/carrito/agregar_item', '/carrito/item', '/cart/add_item']
+  for (const body of bodyVariants) {
+    for (const path of candidates) {
+      try {
+        const res = await xFetchApi(path, { method: 'POST', body, headers: buildHeaders({}, true) })
+        return res
+      } catch (err) {
+        if (err?.status && err.status !== 404 && err.status !== 400) throw err
+      }
+    }
+  }
+  const e = new Error('No se pudo agregar el producto al carrito (verifica rutas/params en Xano)')
+  e.code = 'CART_ADD_FAILED'
+  throw e
 }
+
 export const actualizarItemCarrito = async (itemId, payload) => {
-  return xFetchApi(`/carrito/item/${itemId}`, { method: 'PATCH', body: payload, headers: buildHeaders({}, true) })
+  const candidates = [`/carrito/item/${itemId}`, `/item_carrito/${itemId}`]
+  for (const path of candidates) {
+    try {
+      return await xFetchApi(path, { method: 'PATCH', body: payload, headers: buildHeaders({}, true) })
+    } catch (err) {
+      if (err?.status && err.status !== 404 && err.status !== 400) throw err
+    }
+  }
+  const e = new Error('No se pudo actualizar el item del carrito')
+  e.code = 'CART_UPDATE_FAILED'
+  throw e
 }
+
 export const eliminarItemCarrito = async (itemId) => {
-  return xFetchApi(`/carrito/item/${itemId}`, { method: 'DELETE', headers: buildHeaders({}, true) })
+  const candidates = [`/carrito/item/${itemId}`, `/item_carrito/${itemId}`]
+  for (const path of candidates) {
+    try {
+      return await xFetchApi(path, { method: 'DELETE', headers: buildHeaders({}, true) })
+    } catch (err) {
+      if (err?.status && err.status !== 404 && err.status !== 400) throw err
+    }
+  }
+  const e = new Error('No se pudo eliminar el item del carrito')
+  e.code = 'CART_DELETE_FAILED'
+  throw e
 }
