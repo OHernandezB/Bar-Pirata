@@ -126,6 +126,7 @@ export default function AdminCategoriesPage() {
         {items.length === 0 && !loading ? (
           <div className="admin__empty">No hay categorías para mostrar.</div>
         ) : (
+          <div className="table-responsive">
           <table className="table table--admin">
             <thead>
               <tr>
@@ -170,6 +171,7 @@ export default function AdminCategoriesPage() {
               })}
             </tbody>
           </table>
+          </div>
         )}
       </section>
     </main>

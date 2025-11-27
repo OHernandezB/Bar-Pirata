@@ -826,7 +826,7 @@ export default function AdminUsersPage() {
                               ) : (
                                 <>
                                   <button 
-                                    className="btn btn--ghost btn--sm" 
+                                    className="btn btn--gold btn--sm btn-sm py-1 px-2 action-btn" 
                                     onClick={() => startEdit(u)} 
                                     disabled={!canEdit || uiBusy}
                                     title="Editar usuario"
@@ -835,7 +835,7 @@ export default function AdminUsersPage() {
                                   </button>
                                   
                                   <button 
-                                    className={`btn btn--sm ${estado === 'activo' ? 'btn--amber' : 'btn--success'}`}
+                                    className={`btn btn--sm btn-sm py-1 px-2 action-btn ${estado === 'activo' ? 'btn--amber' : 'btn--success'}`}
                                     onClick={() => {
                                       console.log('Botón bloquear/activar clickeado - Usuario:', u)
                                       console.log('Estado actual:', estado)
@@ -850,7 +850,7 @@ export default function AdminUsersPage() {
                                   </button>
                                   
                                   <button 
-                                    className="btn btn--danger btn--sm" 
+                                    className="btn btn--danger btn--sm btn-sm py-1 px-2 action-btn" 
                                     onClick={() => handleDeleteUser(u)} 
                                     disabled={!canEdit || uiBusy}
                                     title="Eliminar usuario"

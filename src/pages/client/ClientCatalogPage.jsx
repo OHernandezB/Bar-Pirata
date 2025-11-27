@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Form, InputGroup, Spinner, Alert, Button } from 'react-bootstrap'
 import { Search } from 'react-bootstrap-icons'
 import ClientProductCard from '../../components/client/ClientProductCard.jsx'
-import ClientNavbar from '../../components/client/ClientNavbar.jsx'
 import { getProducts } from '../../api/xano.js'
 import { useCart } from '../../context/CartContext.jsx'
 import '../../styles/client.css'
@@ -92,7 +91,6 @@ const ClientCatalogPage = () => {
 
   return (
     <div className="client-catalog-page">
-      <ClientNavbar />
       <div className="client-catalog-hero">
         <Container>
           <h1 className="text-center mb-4 text-warning">Catálogo de Productos</h1>
@@ -159,9 +157,9 @@ const ClientCatalogPage = () => {
             </Col>
           </Row>
         ) : (
-          <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+          <Row className="g-4">
             {filteredProducts.map((product) => (
-              <Col key={product.id}>
+              <Col key={product.id} xs={12} sm={12} md={6} lg={4}>
                 <ClientProductCard 
                   product={product} 
                   onAddToCart={addMapped}

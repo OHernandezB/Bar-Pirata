@@ -116,6 +116,7 @@ export function Navbar({ brand = 'Bar Pirata', links = defaultLinks }) {
                   <Link role="menuitem" to="/admin/users" onClick={() => setUserOpen(false)}>Usuarios</Link>
                   <Link role="menuitem" to="/admin/products" onClick={() => setUserOpen(false)}>Productos</Link>
                   <Link role="menuitem" to="/admin/categories" onClick={() => setUserOpen(false)}>Categorías</Link>
+                  <Link role="menuitem" to="/admin/orders" onClick={() => setUserOpen(false)}>Órdenes</Link>
                   <button role="menuitem" className="navbar__logout" onClick={handleLogout}>Cerrar Sesión</button>
                 </>
               )}
@@ -131,5 +132,5 @@ const defaultLinks = [
   { to: '/inicio', label: 'Inicio' },
   { to: '/cliente/catalogo', label: 'Catálogo' },
   { to: '/#eventos', label: 'Eventos' },
-  { to: '/inicio', label: 'Nosotros' },
+  { to: '/nosotros', label: 'Nosotros' },
 ];

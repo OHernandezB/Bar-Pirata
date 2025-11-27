@@ -59,9 +59,11 @@
 }
 
 .product-image-container {
+  position: relative;
   height: 200px;
   overflow: hidden;
   background: var(--pirata-black);
+  border-radius: 12px;
 }
 
 .product-image {
@@ -70,6 +72,7 @@
   object-fit: cover;
   object-position: center;
   transition: transform 0.3s ease;
+  border-radius: 12px;
 }
 
 .product-card:hover .product-image {
@@ -87,7 +90,7 @@
 }
 .product-image-nav-btn {
   background: rgba(0,0,0,0.35);
-  color: var(--pirata-gold);
+  color: #D4A757;
   border: 1px solid rgba(212,175,55,0.45);
   width: 28px;
   height: 28px;
@@ -95,9 +98,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
 }
 .product-image-nav-btn:hover {
   background: rgba(0,0,0,0.55);
+}
+
+/* Bloque de texto sobre fondo degradado oscuro */
+.product-text-block {
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.35) 100%);
+  padding: 0.75rem;
+  border-radius: 10px;
+}
+.product-title {
+  color: #FFD479;
+}
+.product-desc {
+  color: #FFFFFF;
+}
+
+/* Asegurar visibilidad de stock dentro de la card */
+.product-card .text-muted {
+  color: #FFFFFF !important;
 }
 
 /* Buttons */
@@ -265,4 +287,13 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--pirata-gold-light);
+}
+.product-title {
+  color: var(--pirata-gold);
+}
+/* Page layout: ensure footer sticks to bottom without fixed positioning */
+.client-cart-page {
+  min-height: calc(100vh - var(--header-height));
+  display: flex;
+  flex-direction: column;
 }

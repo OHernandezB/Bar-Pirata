@@ -70,44 +70,50 @@ const ClientCartPage = () => {
 
   if (successMessage) {
     return (
-      <Container className="py-5">
-        <Row>
-          <Col md={8} className="mx-auto text-center">
-            <Alert variant="success" className="bar-pirata-alert">
-              <i className="bi bi-check-circle-fill display-4 text-success mb-3"></i>
-              <h4 className="text-success">¡Éxito!</h4>
-              <p className="text-light">{successMessage}</p>
-              <p className="text-muted small">
-                Serás redirigido al catálogo en unos segundos...
-              </p>
-            </Alert>
-          </Col>
-        </Row>
-      </Container>
+      <div className="client-cart-page">
+        <ClientNavbar />
+        <Container className="py-5 flex-grow-1 d-flex align-items-center">
+          <Row className="w-100">
+            <Col md={8} className="mx-auto text-center">
+              <Alert variant="success" className="bar-pirata-alert">
+                <i className="bi bi-check-circle-fill display-4 text-success mb-3"></i>
+                <h4 className="text-success">¡Éxito!</h4>
+                <p className="text-light">{successMessage}</p>
+                <p className="text-muted small">
+                  Serás redirigido al catálogo en unos segundos...
+                </p>
+              </Alert>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     )
   }
 
   if (items.length === 0) {
     return (
-      <Container className="py-5">
-        <Row>
-          <Col md={8} className="mx-auto text-center">
-            <i className="bi bi-cart-x display-1 text-warning mb-3"></i>
-            <h2 className="text-light mb-3">Tu carrito está vacío</h2>
-            <p className="text-light mb-4">
-              ¡Agrega algunos productos a tu carrito para continuar!
-            </p>
-            <Button
-              variant="warning"
-              onClick={() => navigate('/cliente/catalogo')}
-              className="btn-lg"
-            >
-              <i className="bi bi-arrow-left me-2"></i>
-              Ir al Catálogo
-            </Button>
-          </Col>
-        </Row>
-      </Container>
+      <div className="client-cart-page">
+        <ClientNavbar />
+        <Container className="py-5 flex-grow-1 d-flex align-items-center">
+          <Row className="w-100">
+            <Col md={8} className="mx-auto text-center">
+              <i className="bi bi-cart-x display-1 text-warning mb-3"></i>
+              <h2 className="text-light mb-3">Tu carrito está vacío</h2>
+              <p className="text-light mb-4">
+                ¡Agrega algunos productos a tu carrito para continuar!
+              </p>
+              <Button
+                variant="warning"
+                onClick={() => navigate('/cliente/catalogo')}
+                className="btn-lg"
+              >
+                <i className="bi bi-arrow-left me-2"></i>
+                Ir al Catálogo
+              </Button>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     )
   }
 
@@ -123,7 +129,7 @@ const ClientCartPage = () => {
         </Container>
       </div>
 
-      <Container className="py-5">
+      <Container className="py-5 flex-grow-1">
         {errorMessage && (
           <Row className="mb-4">
             <Col>

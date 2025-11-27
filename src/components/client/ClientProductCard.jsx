@@ -13,22 +13,27 @@ const ClientProductCard = ({ product, onAddToCart }) => {
   const next = (e) => { e.stopPropagation(); setCurrent((i) => (i + 1) % (imgs.length || 1)) }
   return (
     <Card className="h-100 shadow-sm product-card">
-      <div className="product-image-container" onClick={imgs.length > 1 ? next : undefined}>
+      <div className="product-image-container">
         <Card.Img 
           variant="top" 
           src={imgSrc}
           alt={product.nombre}
           className="product-image"
         />
-        {/* Navegación por clic sin overlay de botones */}
+        {imgs.length > 1 && (
+          <div className="product-image-nav">
+            <button type="button" aria-label="Anterior" className="product-image-nav-btn prev" onClick={prev}>‹</button>
+            <button type="button" aria-label="Siguiente" className="product-image-nav-btn next" onClick={next}>›</button>
+          </div>
+        )}
       </div>
       <Card.Body className="d-flex flex-column">
-        <div className="mb-2">
+        <div className="mb-2 product-text-block">
           <Badge bg="warning" text="dark" className="mb-2">
             {product.categoria}
           </Badge>
-          <Card.Title className="h5 text-light">{product.nombre}</Card.Title>
-          <Card.Text className="text-muted small flex-grow-1">
+          <Card.Title className="h5 product-title">{product.nombre}</Card.Title>
+          <Card.Text className="product-desc small flex-grow-1">
             {product.descripcion}
           </Card.Text>
         </div>

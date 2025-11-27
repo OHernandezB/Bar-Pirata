@@ -101,20 +101,23 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Órdenes pendientes */}
-        <section className="admin__section">
+        <section className="admin__section admin-orders">
           <div className="admin__subheader">
             <h3>Órdenes pendientes</h3>
-            <button className="btn" onClick={async () => {
-              setLoadingOrders(true)
-              try { const arr = await getOrdenes({ estado: 'pendiente' }); setOrders(Array.isArray(arr) ? arr : []) }
-              finally { setLoadingOrders(false) }
-            }} disabled={loadingOrders}>{loadingOrders ? 'Actualizando…' : 'Refrescar'}</button>
+            <div className="admin__actions">
+              <button className="btn" onClick={async () => {
+                setLoadingOrders(true)
+                try { const arr = await getOrdenes({ estado: 'pendiente' }); setOrders(Array.isArray(arr) ? arr : []) }
+                finally { setLoadingOrders(false) }
+              }} disabled={loadingOrders}>{loadingOrders ? 'Actualizando…' : 'Refrescar'}</button>
+              <a className="btn" href="/admin/orders">Gestionar órdenes</a>
+            </div>
           </div>
           {statusMsg && <p className="admin__status">{statusMsg}</p>}
           {orders.length === 0 ? (
             <div className="admin__empty">No hay órdenes pendientes</div>
           ) : (
-            <div className="table-responsive">
+            <div className="table-responsive admin-orders__table">
               <table className="table table--admin">
                 <thead>
                   <tr>
@@ -135,7 +138,7 @@ export default function AdminDashboardPage() {
                       <td className="table__cell-price">${Number(o.total_orden ?? o.subtotal ?? 0).toLocaleString('es-CL')}</td>
                       <td><span className="badge">{o.estado}</span></td>
                       <td>
-                        <div style={{ display: 'flex', gap: 8 }}>
+                        <div className="admin-orders__actions">
                           <button className="btn" onClick={async () => {
                             try {
                               await updateOrden(o.id, { estado: 'aprobado' })

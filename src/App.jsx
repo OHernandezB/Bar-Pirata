@@ -3,6 +3,7 @@
 import './App.css'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Home from './pages/Home.jsx'
+import NosotrosPage from './pages/NosotrosPage.jsx'
 import MenuPage from './pages/MenuPage.jsx'
 import CartPage from './pages/CartPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -10,6 +11,7 @@ import AdminProductsPage from './pages/admin/AdminProductsPage.jsx'
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx'
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage.jsx'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage.jsx'
+import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx'
 import AdminLayout from './pages/admin/AdminLayout.jsx'
 import UserLayout from './pages/user/UserLayout.jsx'
 import UserOrdersPage from './pages/user/UserOrdersPage.jsx'
@@ -50,6 +52,7 @@ function App() {
           <Route path="/inicio" element={<Home />} />
           <Route path="/menu" element={<MenuPage />} />
           <Route path="/carrito" element={<CartPage />} />
+          <Route path="/nosotros" element={<NosotrosPage />} />
           <Route path="/recuperar" element={<ForgotPasswordPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/perfil" element={<ProfilePage />} />
@@ -79,6 +82,7 @@ function App() {
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="products" element={<AdminProductsPage />} />
             <Route path="categories" element={<AdminCategoriesPage />} />
+            <Route path="orders" element={<AdminOrdersPage />} />
           </Route>
 
           <Route

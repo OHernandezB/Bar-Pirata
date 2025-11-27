@@ -240,6 +240,12 @@
   gap: 0.5rem;
   flex-wrap: wrap;
 }
+.table__actions .action-btn { margin-right: 6px; }
+
+@media (max-width: 768px) {
+  .table__actions .action-btn { margin-right: 0; margin-bottom: 6px; }
+}
+.table__actions .btn { margin-right: 0.25rem; }
 
 /* Badges mejorados */
 .badge {

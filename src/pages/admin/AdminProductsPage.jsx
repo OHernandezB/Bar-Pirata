@@ -17,7 +17,7 @@ export default function AdminProductsPage() {
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
 
-  const [form, setForm] = useState({ name: '', description: '', price: '', stock: '', categoria_id: '', estado: true, category: '', tags: '' })
+  const [form, setForm] = useState({ name: '', description: '', price: '', stock: '', estado: true, category: '' })
   const [imageFiles, setImageFiles] = useState([])
   const [isDragging, setIsDragging] = useState(false)
   const [catList, setCatList] = useState([])
@@ -245,6 +245,25 @@ export default function AdminProductsPage() {
     return todas
   }
 
+  // Actualizar imágenes de un producto existente reutilizando upload/patch
+  const updateProductImages = async (productoId, files) => {
+    try {
+      const imagenes = await uploadImageLote(files || [])
+      const token = getAuthToken()
+      const resPatch = await fetch(`${API_BASE}/producto/${productoId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ imagen_upload: imagenes })
+      })
+      if (!resPatch.ok) throw new Error('No se pudo actualizar imágenes del producto')
+      await load()
+      alert('Imágenes del producto actualizadas')
+    } catch (err) {
+      console.error('updateProductImages error', err)
+      alert(err?.message || 'Error actualizando imágenes')
+    }
+  }
+
   const buildPayloadProducto = ({ nombre, descripcion, precio, stock, categoria_id, estado }) => {
     const nombreTrim = String(nombre || '').trim()
     if (!nombreTrim) throw new Error('El nombre es requerido')
@@ -327,7 +346,8 @@ export default function AdminProductsPage() {
     try {
       const categoriaId = selectedCat?.id != null
         ? Number(selectedCat.id)
-        : (Number.isFinite(Number(form.category)) ? Number(form.category) : (Number.isFinite(Number(form.categoria_id)) ? Number(form.categoria_id) : 1))
+        : (Number.isFinite(Number(form.category)) ? Number(form.category) : NaN)
+      if (!Number.isFinite(categoriaId)) { setError('Selecciona una categoría válida'); return }
 
       const result = await crearProductoConImagenes({
         nombre: String(form.name || '').trim(),
@@ -341,7 +361,7 @@ export default function AdminProductsPage() {
       })
       if (result) {
         alert('Producto creado correctamente')
-        setForm({ name: '', description: '', price: '', stock: '', categoria_id: '', estado: true, category: '', tags: '' })
+        setForm({ name: '', description: '', price: '', stock: '', estado: true, category: '' })
         setSelectedCat(null)
         setImageFiles([])
         await load()
@@ -416,33 +436,34 @@ export default function AdminProductsPage() {
         <h3>Crear producto</h3>
         {error && <div className="admin__error">{error}</div>}
         <form onSubmit={handleCreate} className="admin__form">
-          <div className="form-field">
+          <div className="form-field mb-3">
             <label>Nombre</label>
             <input className="form-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
           </div>
-          <div className="form-field">
+          <div className="form-field mb-3">
             <label>Precio</label>
             <input className="form-input" type="number" min="0" step="1" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} required />
           </div>
-          <div className="form-field">
+          <div className="form-field mb-3">
             <label>Stock</label>
             <input className="form-input" type="number" min="0" step="1" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: e.target.value }))} required />
           </div>
-          <div className="form-field form-field--full">
+          <div className="form-field form-field--full mb-3">
             <label>Descripción</label>
             <textarea className="form-textarea" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
           </div>
-          <div className="form-field">
+          <div className="form-field mb-3">
             <label>Categoría</label>
             {catList.length > 0 ? (
               <select
-                className="form-input"
+                className="form-input category-select"
                 value={selectedCat?.id != null ? String(selectedCat.id) : ''}
                 onChange={(e) => {
                   const v = e.target.value;
                   const c = catList.find((x) => String(x.id) === v) || null;
                   setSelectedCat(c);
                 }}
+                style={{ maxWidth: 380 }}
               >
                 <option value="">Selecciona categoría</option>
                 {catList.map((c) => (
@@ -450,22 +471,14 @@ export default function AdminProductsPage() {
                 ))}
               </select>
             ) : (
-              <input className="form-input" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} placeholder="Escribe la categoría si no carga el listado" />
+              <input className="form-input category-select" style={{ maxWidth: 380 }} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} placeholder="Escribe la categoría si no carga el listado" />
             )}
           </div>
-          <div className="form-field">
-            <label>Categoría ID (opcional si seleccionaste arriba)</label>
-            <input className="form-input" type="number" min="1" step="1" value={form.categoria_id} onChange={e => setForm(f => ({ ...f, categoria_id: e.target.value }))} placeholder="Ingresa el ID si no aparece el listado" />
-          </div>
-          <div className="form-field">
+          <div className="form-field mb-3">
             <label>Activo</label>
             <input type="checkbox" checked={Boolean(form.estado)} onChange={e => setForm(f => ({ ...f, estado: e.target.checked }))} />
           </div>
-          <div className="form-field">
-            <label>Tags (coma)</label>
-            <input className="form-input" value={form.tags} onChange={e => setForm(f => ({ ...f, tags: e.target.value }))} placeholder="ej: clásico, artesanal" />
-          </div>
-          <div className="form-field form-field--full">
+          <div className="form-field form-field--full mb-4 text-center">
             <label>Imágenes del producto (mínimo 3)</label>
             <div
               className={`admin__dropzone ${isDragging ? 'is-dragging' : ''}`}
@@ -503,7 +516,7 @@ export default function AdminProductsPage() {
               />
             </div>
           </div>
-          <div className="form-actions">
+          <div className="form-actions text-center mt-3">
             <button className="btn" type="submit" disabled={!canSubmit || !canEdit}>Crear</button>
           </div>
         </form>
@@ -525,6 +538,7 @@ export default function AdminProductsPage() {
         {items.length === 0 && !loading ? (
           <div className="admin__empty">No hay productos aún. Crea el primero arriba.</div>
         ) : (
+          <div className="table-responsive">
           <table className="table table--admin">
             <thead>
               <tr>
@@ -554,7 +568,11 @@ export default function AdminProductsPage() {
                         const imgs = Array.isArray(p.imagenes_urls) && p.imagenes_urls.length > 0
                           ? p.imagenes_urls
                           : ((typeof p.imagen_url === 'string' && p.imagen_url.trim()) ? [p.imagen_url] : [])
-                        return <ImageCarousel images={imgs} />
+                        return (
+                          <div style={{ display: 'inline-block' }}>
+                            <ImageCarousel images={imgs} />
+                          </div>
+                        )
                       })()}
                     </td>
                     <td>
@@ -575,12 +593,16 @@ export default function AdminProductsPage() {
                       })()}
                     </td>
                     <td>
-                      <button className="btn btn--danger" onClick={() => handleDelete(p.id || p.uuid || p._id)} disabled={!canEdit}>Eliminar</button>
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <button className="btn btn--gold btn--sm" onClick={() => navigate(`/admin/products?id=${p.id}`)}>Editar</button>
+                        <button className="btn btn--danger btn--sm" onClick={() => handleDelete(p.id || p.uuid || p._id)} disabled={!canEdit}>Eliminar</button>
+                      </div>
                     </td>
                   </tr>
                 ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
     </main>

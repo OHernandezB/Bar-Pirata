@@ -199,7 +199,7 @@ a { color: var(--color-accent); }
 }
 
 /* Empuje del contenido por header (reducido y ajustado para menú) */
-  .site-content { padding-top: calc(var(--header-height) - 3.75rem); }
+  .site-content { padding-top: calc(var(--header-height) - 3.75rem); min-height: calc(100vh - var(--header-height)); }
 
  /* Empuje específico para la sección de eventos y alineación bajo header fijo (igual a espacio de Ver carta) */
     section#eventos.events { margin-top: 50vh; scroll-margin-top: calc(var(--header-height) + 28px); }

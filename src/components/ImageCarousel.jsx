@@ -8,13 +8,14 @@ const ImageCarousel = ({ images }) => {
     return <img src="/IMG/logo-bar-pirata.png" alt="Default" className="carousel-image" />;
   }
 
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-  };
+  const prev = (e) => { e.stopPropagation(); setCurrentIndex((i) => (i - 1 + images.length) % images.length); };
+  const next = (e) => { e.stopPropagation(); setCurrentIndex((i) => (i + 1) % images.length); };
 
   return (
-    <div className="carousel-container" onClick={handleNext}>
+    <div className="carousel-container">
+      <button type="button" aria-label="Anterior" className="carousel-btn prev" onClick={prev}>‹</button>
       <img src={images[currentIndex]} alt={`Image ${currentIndex + 1}`} className="carousel-image" />
+      <button type="button" aria-label="Siguiente" className="carousel-btn next" onClick={next}>›</button>
     </div>
   );
 };
