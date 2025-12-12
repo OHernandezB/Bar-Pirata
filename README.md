@@ -46,7 +46,8 @@ El objetivo principal del proyecto es evaluar:
 
 ### 🛠️ Herramientas
 - Git & GitHub   
-- Visual Studio Code  
+- Visual Studio Code
+- Trae
 - Firebase Hosting (deploy del frontend)  
 
 
