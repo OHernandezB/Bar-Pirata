@@ -106,7 +106,7 @@ Base de Datos (Xano DB)
 
 ### 🔹 Clonar el Repositorio
 
-git clone https://github.com/OHernandezB/Bar-Pirata.git
+git clone https://github.com/OHernandezB/Bar-Pirata.git   
 cd Proyecto-Bar-Pirata
 
 
@@ -122,7 +122,6 @@ Este comando instalará todos los módulos necesarios definidos en `package.json
 Crear un archivo `.env` en la raíz del proyecto con la siguiente estructura:
 
 VITE_API_URL=https://x8ki-letl-twmt.n7.xano.io/workspace/127801-0/api
-
 
 Esta URL corresponde al backend configurado en Xano.
 
