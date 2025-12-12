@@ -1,5 +1,5 @@
 # 🍺 Proyecto Bar Pirata  
-**Aplicación Web Full-Stack – Evaluación Académica**
+**Aplicación Web Full-Stack II – Evaluación Académica**
 
 **Proyecto Bar Pirata** es una aplicación web full-stack desarrollada con fines exclusivamente académicos, cuyo objetivo es aplicar y consolidar conocimientos de desarrollo web, consumo de APIs REST, autenticación y modelado de datos.
 
