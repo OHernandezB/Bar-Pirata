@@ -45,8 +45,7 @@ El objetivo principal del proyecto es evaluar:
   - órdenes  
 
 ### 🛠️ Herramientas
-- Git & GitHub  
-- Postman  
+- Git & GitHub   
 - Visual Studio Code  
 - Firebase Hosting (deploy del frontend)  
 
